@@ -1,0 +1,1 @@
+export { warCasualties } from './warCasualties'
