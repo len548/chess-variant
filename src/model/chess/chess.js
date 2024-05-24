@@ -44,9 +44,7 @@ class Game {
         // These are defined by cards.
         this.executeAction = function() {}
         this.onClick = function() {}
-        this.onClickOnSquare = function() {
-            console.log("gameState.onClickonSquare is called defined by sheet of ice.")
-        }
+        this.onClickOnSquare = function() {}
     }
     
     
@@ -94,7 +92,8 @@ class Game {
         console.log(`the hand after drawing a card: ${this.playerTurnToMoveIsWhite ? this.whiteHand : this.blackHand }`)
     }
     
-
+    // return selected cards
+    // It also modify the given deck
     pickRandomCards(deck, count) {
         let currentIndex = deck.length, randomIndex;
         if (deck.length < count) {
@@ -114,7 +113,7 @@ class Game {
         let selectedCards = deck.slice(0, count);
 
         // Append "War Casualties" card to selected cards8
-        selectedCards.push(deck.find(card => card.name === "Sheet of Ice"));
+        selectedCards.push(deck.find(card => card.name === "Labotomy"));
 
         return selectedCards;
 

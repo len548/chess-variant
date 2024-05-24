@@ -3,7 +3,6 @@ export const warCasualties = (gameState, isWhite) => {
     /* TO-DO:
      - add casualities to the gameState, -> boolean true
      - change the gameState to 
-     - 
     */
 
     gameState.onClick = (e) => {

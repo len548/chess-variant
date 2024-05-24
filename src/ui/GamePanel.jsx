@@ -55,7 +55,8 @@ function GamePanel() {
         playerTurnToMoveIsWhite ? setWhiteDiscardPile(gameState.whiteUsedCards) : setBlackDiscardPile(gameState.blackUsedCards);
         // setGameState({ ...gameState })
         setGameState(gameState);
-        console.log(gameState.onClickOnSquare)
+        gameState.onClickOnSquare = gameState.onClickOnSquare.bind(gameState)
+        // console.log(gameState.onClickOnSquare)
     };
 
     // Function to draw a card from the deck

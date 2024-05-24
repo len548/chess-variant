@@ -13,9 +13,9 @@ export const cardsData = {
       },
       {
         "id": "labotomy",
-        "name": "Lobotomy",
+        "name": "Labotomy",
         "description": "Remove two Random cards from your opponents hand. Cards are immediately discarded. Opponent cannot draw new cards until after next turn.",
-        "effect": labotomy,
+        "effect": effects.labotomy,
         "points": 3,
         "uniqueness": false,
         "continuousEffect": false
@@ -24,7 +24,7 @@ export const cardsData = {
         "id": "sheet_of_ice",
         "name": "Sheet of Ice",
         "description": "Designate one 2 X 2 square area. It now acts as a slippery ground, any and all pieces that pass over or land on this area must slide to the end of whatever direction they were heading.",
-        "effect": sheetOfIce,
+        "effect": effects.sheetOfIce,
         "points": 4,
         "uniqueness": true,
         "continuousEffect": false
