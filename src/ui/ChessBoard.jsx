@@ -54,7 +54,7 @@ function ChessBoard(
         // console.log(`finalposition: ${finalPosition}`)
         const selectedId = draggedPieceTargetId
         // console.log(`draggedPieceId: ${draggedPieceTargetId}`)
-        movePiece(selectedId, finalPosition, currentGame, e)
+        movePiece(selectedId, finalPosition, currentGame)
     }
 
     const onClick = (e) => {
@@ -64,8 +64,15 @@ function ChessBoard(
         setGameState(gameState)
     }
 
+    const onClickonSquare = (e) => {
+        // console.log("clicked on the board")
+        gameState.onClickOnSquare(e)
+        // console.log(gameState.onClickOnSquare)
+        setGameState(gameState)
+    }
 
-    function movePiece(selectedID, finalPosition, currentGame, e) {
+
+    function movePiece(selectedID, finalPosition, currentGame) {
         //selectedID: wp1
         //finalPosition: [105, 285]
 
@@ -113,15 +120,16 @@ function ChessBoard(
             width: "720px",
             height: "720px"}}
         >
-            <Stage width={720} height={720}>
+            <Stage width={720} height={720} onClick={ (e) => { onClickonSquare(e) }}>
                 <Layer>
-                {gameState.getBoard().map((row) => {
+                {gameState.getBoard().map((row, rowIndex) => {
                     return (
-                        <React.Fragment>
-                            {row.map((square) => {
+                        <React.Fragment key={rowIndex}>
+                            {row.map((square, colIndex) => {
                                 if (square.isOccupied()) {
                                     return (
                                         <Piece 
+                                            key = {`${rowIndex}-${colIndex}`}
                                             x = {square.getCanvasCoord()[0]}
                                             y = {square.getCanvasCoord()[1]} 
                                             imgurls = {piecemap[square.getPiece().name]}
@@ -135,11 +143,9 @@ function ChessBoard(
                                             playerTurnToMoveIsWhite = {playerTurnToMoveIsWhite}
                                             whiteKingInCheck = {whiteKingInCheck}
                                             blackKingInCheck = {blackKingInCheck}
-                                            gameState = {gameState}
                                             selectedItems = {selectedItems}
                                         />)
                                 } else {
-                                    return 
                                 }
                             })}
                         </React.Fragment>

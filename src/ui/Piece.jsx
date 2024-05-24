@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { Image, useStrictMode } from 'react-konva';
+import { Image } from 'react-konva';
 import useImage from 'use-image'
 
 const Piece = (props) => {

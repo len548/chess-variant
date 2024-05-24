@@ -41,9 +41,38 @@ class Game {
         this.nQueens = 1
 
         this.selectedItems = []
+        // These are defined by cards.
         this.executeAction = function() {}
         this.onClick = function() {}
-        this.cancelTheCurrentCard = function() {}
+        this.onClickOnSquare = function() {
+            console.log("gameState.onClickonSquare is called defined by sheet of ice.")
+        }
+    }
+    
+    
+    cancelTheCurrentCard = (card, isWhite) => {
+        console.log("cancelTheCurrentCard is called. " + isWhite);
+        if (!this.canPlayCard) {
+            console.log("You have already played a card this turn.")
+            return
+        }
+        this.selectedItems = [];
+        if (isWhite) {
+            const usedCard = this.whiteUsedCards.find(c => c.id === card.id);
+            this.whiteUsedCards = this.whiteUsedCards.filter(c => c.id !== card.id);
+            console.log(`usedCard: ${usedCard} back to the white hand`)
+            this.whiteHand.push(usedCard);
+        }
+        else {
+            const usedCard = this.blackUsedCards.find(c => c.id === card.id);
+            this.blackUsedCards = this.blackUsedCards.filter(c => c.id !== card.id);
+            console.log(`usedCard: ${usedCard} back to the black hand`)
+            this.blackHand.push(usedCard);
+        }
+
+        this.onClick = () => {}
+        this.executeAction = () => {}
+        this.onClickOnSquare = () => { console.log("default onClickOnSquare is called.") }
     }
     
     // return drawn card
@@ -84,8 +113,8 @@ class Game {
         }
         let selectedCards = deck.slice(0, count);
 
-        // Append "War Casualties" card to selected cards
-        selectedCards.push(deck.find(card => card.name === "War Casualties"));
+        // Append "War Casualties" card to selected cards8
+        selectedCards.push(deck.find(card => card.name === "Sheet of Ice"));
 
         return selectedCards;
 
@@ -396,6 +425,7 @@ class Game {
         newGame.executeAction = this.executeAction
         newGame.onClick = this.onClick
         newGame.cancelTheCurrentCard = this.cancelTheCurrentCard
+        newGame.onClickOnSquare = this.onClickOnSquare
 
         return newGame        
     }

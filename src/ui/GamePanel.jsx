@@ -1,12 +1,10 @@
-import React from 'react'
-import SideBar from './SideBar'
+// This file contains the GamePanel component which is the main component of the game.
 import ChessBoard from "./ChessBoard"
 import { useState } from 'react'
 import Game from '../model/chess/chess'
 import Hand from './Hand'
-import {Deck, DiscardPile, CurrentCard} from './Deck'
+import {Deck, DiscardPile} from './Deck'
 import './ChessGame.css'
-import {cardsData} from '../model/cards/cards'
 
 function GamePanel() {
     const [gameState, setGameState] = useState(new Game());
@@ -17,8 +15,8 @@ function GamePanel() {
     const [blackHand, setBlackHand] = useState(gameState.getBlackHand());
     const [whiteDiscardPile, setWhiteDiscardPile] = useState([]);
     const [blackDiscardPile, setBlackDiscardPile] = useState([]);
-    const [deadWhitePieces, setDeadWhitePieces] = useState([]);
-    const [deadBlackPieces, setDeadBlackPieces] = useState([]);
+    // const [deadWhitePieces, setDeadWhitePieces] = useState([]);
+    // const [deadBlackPieces, setDeadBlackPieces] = useState([]);
     const [isCardPlayed, setIsCardPlayed] = useState(false);
     
     const [playerTurnToMoveIsWhite, setPlayerTurnToMoveIsWhite] = useState(true);
@@ -42,6 +40,7 @@ function GamePanel() {
             setBlackDiscardPile(gs.getBlackUsedCards())
         }
         setIsCardPlayed(false)
+        console.log(gs.onClickOnSquare)
     }
 
     const handleCardPlay = (card, isWhite) => {
@@ -54,7 +53,9 @@ function GamePanel() {
         gameState.playCard(card, isWhite);
         playerTurnToMoveIsWhite ? setWhiteHand(gameState.getWhiteHand()) : setBlackHand(gameState.getBlackHand());
         playerTurnToMoveIsWhite ? setWhiteDiscardPile(gameState.whiteUsedCards) : setBlackDiscardPile(gameState.blackUsedCards);
-        // setGameState({ ...gameState });
+        // setGameState({ ...gameState })
+        setGameState(gameState);
+        console.log(gameState.onClickOnSquare)
     };
 
     // Function to draw a card from the deck
@@ -64,7 +65,9 @@ function GamePanel() {
             return
         }
         playerTurnToMoveIsWhite ? setWhiteHand(gameState.getWhiteHand()) : setBlackHand(gameState.getBlackHand());
-        setGameState({ ...gameState });
+        setGameState(gameState.copyGame());
+        setWhiteDeck(gameState.getWhiteDeck());
+        setBlackDeck(gameState.getBlackDeck());
     };
 
     // to confirm the action of the card
@@ -74,10 +77,6 @@ function GamePanel() {
         setIsCardPlayed(true)
         // setGameState({ ...gameState });
     }
-
-    const revertGameState = () => {
-        // TO-DO: Retrieve the gameState from the database
-    };
 
     const endTurn = () => {
         // TO-DO: Store the gameState in the database
@@ -114,7 +113,7 @@ function GamePanel() {
             {playerTurnToMoveIsWhite && (
                 <div className="game-info">
                     <Hand hand={whiteHand} onCardClick={ handleCardPlay } isWhite={true} />
-                    <Deck count={gameState.getWhiteDeck().length} />
+                    <Deck count={whiteDeck.length} />
                     <DiscardPile topCard={whiteDiscardPile[whiteDiscardPile.length - 1]} onClick={cancelPlayedCard} isWhite={true} />
                 </div>
             )}
