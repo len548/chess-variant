@@ -3,6 +3,7 @@ import Board from '../assets/chessBoard.png'
 import { Stage, Layer } from 'react-konva';
 import piecemap from './piecemap'
 import Piece from './Piece'
+import { CHESSBOARD_SIZE } from '../utils/utils';
 
 function ChessBoard(
     {
@@ -29,8 +30,8 @@ function ChessBoard(
         */
         let hashmap = {}
         let shortestDistance = Infinity
-        for (let i = 0; i < 8; i++) {
-            for (let j = 0; j < 8; j++) {
+        for (let i = 0; i < CHESSBOARD_SIZE; i++) {
+            for (let j = 0; j < CHESSBOARD_SIZE; j++) {
                 const canvasCoord = chessBoard[i][j].getCanvasCoord()
                 // calculate distance
                 const delta_x = canvasCoord[0] - x 
