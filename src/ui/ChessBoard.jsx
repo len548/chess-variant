@@ -24,8 +24,6 @@ function ChessBoard(
         setDraggedPieceTargetId(e.target.attrs.id)
     }
     
-  
-    
 
     const endDragging = (e) => {
         const currentGame = gameState

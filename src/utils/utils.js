@@ -21,5 +21,10 @@ const inferCoord = (x, y, chessBoard) => {
 
   return hashmap[shortestDistance];
 };
+// this is an enum, but if u use typescript you can use the normal enum, i highly reccomend you to use TS
+const PlayerColor = {
+    WHITE: 'white',
+    BLACK: 'black'
+};
 
 export { inferCoord };

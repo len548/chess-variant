@@ -1,3 +1,24 @@
+Read above this design pattern: State Pattern, otherwise your code will become horribly complicated
+class GameState {
+    startTurn()
+    movePiece() etc..
+}
+
+class CanPlayCardState extends GameState { 
+    playCard()
+}
+etc
+
+your code is hard to maintain and understand, separate the code into logical placeing like
+class CardManager {
+    drawCard()
+    playCard()
+    discardCard()
+} 
+class PieceManager {
+
+}
+
 # Chess-variant
 
 ## Rules
