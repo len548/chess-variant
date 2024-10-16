@@ -27,10 +27,10 @@ function ChessBoard(
         /*
             Should give the closest estimate for new position. 
         */
-        var hashmap = {}
-        var shortestDistance = Infinity
-        for (var i = 0; i < 8; i++) {
-            for (var j = 0; j < 8; j++) {
+        let hashmap = {}
+        let shortestDistance = Infinity
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
                 const canvasCoord = chessBoard[i][j].getCanvasCoord()
                 // calculate distance
                 const delta_x = canvasCoord[0] - x 
