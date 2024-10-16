@@ -5,7 +5,6 @@ function SideBar(){
     return (
         <div className='SideBar'>
             <p>Current Turn: {playerTurnToMoveIsWhite ? "White" : "Black"}</p>
-            
         </div>
     )
 }

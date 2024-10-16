@@ -1,0 +1,3 @@
+const CHESSBOARD_SIZE = 8;
+
+export { CHESSBOARD_SIZE };

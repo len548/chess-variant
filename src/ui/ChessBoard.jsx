@@ -3,6 +3,8 @@ import Board from '../assets/chessBoard.png'
 import { Stage, Layer } from 'react-konva';
 import piecemap from './piecemap'
 import Piece from './Piece'
+import { inferCoord } from '../utils/utils';
+import { CHESSBOARD_SIZE } from '../utils/constants';
 
 function ChessBoard(
     {
@@ -20,30 +22,6 @@ function ChessBoard(
 
     const startDragging = (e) => {
         setDraggedPieceTargetId(e.target.attrs.id)
-    }
-    
-    const inferCoord = (x, y, chessBoard) => {
-        // console.log("actual mouse coordinates: " + x + ", " + y)
-        /*
-            Should give the closest estimate for new position. 
-        */
-        var hashmap = {}
-        var shortestDistance = Infinity
-        for (var i = 0; i < 8; i++) {
-            for (var j = 0; j < 8; j++) {
-                const canvasCoord = chessBoard[i][j].getCanvasCoord()
-                // calculate distance
-                const delta_x = canvasCoord[0] - x 
-                const delta_y = canvasCoord[1] - y
-                const newDistance = Math.sqrt(delta_x**2 + delta_y**2)
-                hashmap[newDistance] = canvasCoord
-                if (newDistance < shortestDistance) {
-                    shortestDistance = newDistance
-                }
-            }
-        }
-        
-        return hashmap[shortestDistance]
     }
     
 
@@ -69,42 +47,43 @@ function ChessBoard(
         //selectedID: wp1
         //finalPosition: [105, 285]
 
-        var whiteKingInCheck = false 
-        var blackKingInCheck = false
-        var blackCheckmated = false 
-        var whiteCheckmated = false
+        let whiteKingInCheck = false 
+        let blackKingInCheck = false
+        let blackCheckmated = false 
+        let whiteCheckmated = false
 
         const update = currentGame.movePiece(selectedID, finalPosition, playerTurnToMoveIsWhite)
         console.log(update)
-        if (update === "invalid move" || update === "moved in the same position." || update === "user tried to capture their own piece") {
-            setDraggedPieceTargetId("")
-            return
-        } else if (update === "b is in check" || update === "w is in check") { 
-            // change the fill of the enemy king or your king based on which side is in check. 
-            // play a sound or something
-            if (update[0] === "b") {
-                blackKingInCheck = true
-            } else {
-                whiteKingInCheck = true
-            }
-        } else if (update === "b has been checkmated" || update === "w has been checkmated") { 
-            if (update[0] === "b") {
-                blackCheckmated = true
-            } else {
-                whiteCheckmated = true
-            }
-        }
-        setDraggedPieceTargetId("")
-        setWhiteKingInCheck(whiteKingInCheck)
-        setBlackKingInCheck(blackKingInCheck)
-        setGameState(currentGame)
-
-        if (blackCheckmated) {
-            alert("WHITE WON BY CHECKMATE!")
-        } else if (whiteCheckmated) {
-            alert("BLACK WON BY CHECKMATE!")
-        }
+        // TODO this is a huge anti pattern to have this long text, i won't reccomend this to keep it, use enum or smth instead
+        if (["invalid move", "moved in the same position.", "user tried to capture their own piece"].includes(update)) {
+            setDraggedPieceTargetId("");
+            return;
+          } else if (update.includes("in check")) {
+            update.startsWith("b") ? blackKingInCheck = true : whiteKingInCheck = true;
+          } else if (update.includes("checkmated")) {
+            update.startsWith("b") ? blackCheckmated = true : whiteCheckmated = true;
+          }
+      
+        setGameStateAndCheckStatus(currentGame, whiteKingInCheck, blackKingInCheck);
+        handleCheckmate(blackCheckmated, whiteCheckmated);
     }
+
+    const setGameStateAndCheckStatus = (currentGame, whiteKingInCheck, blackKingInCheck) => {
+        setDraggedPieceTargetId("");
+        setWhiteKingInCheck(whiteKingInCheck);
+        setBlackKingInCheck(blackKingInCheck);
+        setGameState(currentGame);
+    };
+
+    // Handle checkmate scenario
+    const handleCheckmate = (blackCheckmated, whiteCheckmated) => {
+        if (blackCheckmated) {
+            alert("WHITE WON BY CHECKMATE!");
+        } else if (whiteCheckmated) {
+            alert("BLACK WON BY CHECKMATE!");
+        }
+    };
+
 
     
     return (

@@ -4,7 +4,7 @@ import { Chess } from 'chess.js'
 import { cardsData } from '../cards/cards'
 import Card from '../cards/card'
 // when indexing, remember: [y][x]. 
-
+// what are these numbers? 90,105,15, use the constants file and give proper name to it *magic numbers*
 class Game {
     constructor(){
 
@@ -107,7 +107,7 @@ class Game {
     }
 
     initDeck() {
-        const deck = cardsData.cards.map(card => new Card(
+        return cardsData.cards.map(card => new Card(
             card.id,
             card.name,
             card.description,
@@ -116,7 +116,7 @@ class Game {
             card.uniqueness,
             card.continuousEffect
         ));
-        return deck;
+   
     }
 
     removePiece(pieceID) {
