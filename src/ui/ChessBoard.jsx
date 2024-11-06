@@ -54,18 +54,17 @@ function ChessBoard(
         // console.log(`finalposition: ${finalPosition}`)
         const selectedId = draggedPieceTargetId
         // console.log(`draggedPieceId: ${draggedPieceTargetId}`)
-        movePiece(selectedId, finalPosition, currentGame, e)
+        movePiece(selectedId, finalPosition, currentGame)
     }
 
     const onClick = (e) => {
         gameState.onClick(e)
-        console.log("selectedItems: " + gameState.selectedItems)
         setSelectedItems(gameState.selectedItems)
-        setGameState(gameState)
+        setGameState(gameState.copyGame())
     }
 
 
-    function movePiece(selectedID, finalPosition, currentGame, e) {
+    function movePiece(selectedID, finalPosition, currentGame) {
         //selectedID: wp1
         //finalPosition: [105, 285]
 
