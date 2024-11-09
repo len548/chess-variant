@@ -10,6 +10,7 @@ class Game {
 
         // this.thisPlayersColorIsWhite = true
         this.playerTurnToMoveIsWhite = true
+        this.pieceCounters = new Map();
         this.chessBoard = this.makeStartingBoard()
         this.chess = new Chess()
 
@@ -21,6 +22,8 @@ class Game {
         this.blackUsedCards = [];
         this.continuousCards = [];
         this.canPlayCard = true;
+        this.whiteCardInUse = null;
+        this.blackCardInUse = null;
 
         this.toAlphabet = {
             0:"a", 1:"b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g", 7: "h"
@@ -41,9 +44,55 @@ class Game {
         this.nQueens = 1
 
         this.selectedItems = []
-        this.executeAction = function() {}
+        this.executeAction = function(isWhite) {
+            if (isWhite) {
+                this.canPlayCard = false;
+                this.canMovePiece = false;
+            }
+            // isWhite ? this.discardCard(whiteCardInUse.id, isWhite) : this.discardCard(blackCardInUse.id, isWhite)
+        }
         this.onClick = function() {}
-        this.cancelTheCurrentCard = function() {}
+        this.cancelTheCurrentCard = function () {}
+            // function(isWhite) {
+            // if (isWhite) {
+            //     if (whiteCardInUse) {
+            //         this.whiteHand.push(whiteCardInUse);
+            //         this.whiteCardInUse = null;
+            //     }
+            // }
+            // else {
+            //     if (blackCardInUse){
+            //         this.blackHand.push(blackCardInUse);
+            //         this.blackCardInUse = null;
+            //     }
+            // }
+        // }
+    }
+
+
+
+    changePieceColour(pieceId) {
+        const yx = this.findPiece(this.getBoard(), pieceId);
+        const currentBoard = this.getBoard();
+        const oldPiece = currentBoard[yx[1]][yx[0]].getPiece();
+       if (oldPiece) {
+           console.log(oldPiece)
+           const newColor = oldPiece.color === 'white' ? 'black' : 'white'; // Toggle color
+           // const newPiece = { type: piece.type, color: newColor };
+           // console.log(newPiece);
+           // this.chess.remove(square); // Remove the old piece
+           // this.chess.put(newPiece, square); // Place the new piece with updated color
+           console.log(newColor)
+           const newPieceType = newColor.concat(oldPiece.id.substring(1, 2));
+           const num = this.pieceCounters.get(newPieceType);
+           this.pieceCounters.set(newPieceType, num+1);
+           const newPieceId = newPieceType.concat(num);
+           console.log(newPieceId)
+           const newPiece = new ChessPiece(oldPiece.name, oldPiece.isAttacked, newColor, newPieceId)
+           this.removePiece(pieceId);
+           this.putPiece(newPiece, yx);
+           console.log(newPiece);
+       }
     }
     
     // return drawn card
@@ -85,7 +134,7 @@ class Game {
         let selectedCards = deck.slice(0, count);
 
         // Append "War Casualties" card to selected cards
-        selectedCards.push(deck.find(card => card.name === "War Casualties"));
+        selectedCards.push(deck.find(card => card.name === "Treachery"));
 
         return selectedCards;
 
@@ -102,7 +151,14 @@ class Game {
         const cardToPlay = isWhite ? this.whiteHand.find(c => c.id === card.id) : this.blackHand.find(c => c.id === card.id);
         if (cardToPlay){
             cardToPlay.effect(this, isWhite);
+            console.log(cardToPlay.id)
+            const test = isWhite ? this.whiteHand.filter(item => item.id !== card.id) : this.blackHand.filter(item => item.id !== cardToPlay.id)
+//            console.log(test);
+            isWhite ? this.whiteCardInUse = card : this.blackCardInUse = card;
+//            console.log(cardToPlay);
             this.discardCard(card.id, isWhite);
+            console.log("After filtering: " + isWhite ? this.whiteHand.length : this.blackHand.length)
+
         }
     }
 
@@ -122,17 +178,37 @@ class Game {
     removePiece(pieceID) {
         const currentBoard = this.getBoard()
         const pieceCoordinates = this.findPiece(currentBoard, pieceID)
-        // console.log(pieceCoordinates)
         const x = pieceCoordinates[0]
         const y = pieceCoordinates[1]
+        const square = this.toAlphabet[y] + x.toString();
+        console.log(square);
         currentBoard[y][x].setPiece(null)
+        this.chess.remove(square)
+    }
+
+    /* piece: ChessPiece
+    * square: yx*/
+    putPiece(piece, xy) {
+        const currentBoard = this.getBoard()
+        console.log(xy);
+        const x = xy[0];
+        const y = xy[1];
+        currentBoard[y][x].setPiece(piece);
+        this.setBoard(currentBoard);
+        const square = this.toAlphabet[x] + (8-y).toString();
+        console.log(piece)
+        console.log(square);
+        console.log(this.getBoard()[y][x]);
+        const newPiece = {type: piece.name, color: piece.color};
+        console.log(newPiece);
+        this.chess.put(newPiece, square);
     }
     
     discardCard(cardId, isWhite) {
         const card = isWhite ? this.whiteHand.find(card => card.id === cardId) : this.blackHand.find(card => card.id === cardId);
         if (card) {
-            this.playerTurnToMoveIsWhite ? this.whiteHand = this.whiteHand.filter(c => c.id !== cardId) : this.blackHand = this.blackHand.filter(c => c.id !== cardId);
-            this.playerTurnToMoveIsWhite ? this.whiteUsedCards.push(card) : this.blackUsedCards.push(card);
+            isWhite ? this.whiteHand = this.whiteHand.filter(c => c.id !== cardId) : this.blackHand = this.blackHand.filter(c => c.id !== cardId);
+            isWhite ? this.whiteUsedCards.push(card) : this.blackUsedCards.push(card);
         }
     }
 
@@ -172,11 +248,11 @@ class Game {
 
         const isPromotion = this.isPawnPromotion(to, pieceID[1])
         const move = !isPromotion ? {
-            from: this.toChessMove([x,y]), 
+            from: this.toChessMove([x,y]),
             to: this.toChessMove([to_x, to_y]),
             piece: pieceID[1]
         } : {
-            from: this.toChessMove([x,y]), 
+            from: this.toChessMove([x,y]),
             to: this.toChessMove([to_x, to_y]),
             piece: pieceID[1],
             promotion: 'q'
@@ -359,6 +435,7 @@ class Game {
                     // console.log(backRank[i])
                     startingChessBoard[j][i].setPiece(new ChessPiece(backRank[i], false, "black", blackBackRankId[i]))
                     startingChessBoard[j + 1][7 - i].setPiece(new ChessPiece("pawn", false, "black", "bp" + i))
+
                 } else {
                     // bottom (white)
                     startingChessBoard[j - 1][i].setPiece(new ChessPiece("pawn", false, "white", "wp" + i))
@@ -366,6 +443,16 @@ class Game {
                 }
             }
         }
+        this.pieceCounters.set('wr', 2);
+        this.pieceCounters.set('wn', 2);
+        this.pieceCounters.set('wb', 2);
+        this.pieceCounters.set('wq', 2);
+        this.pieceCounters.set('wp', 8);
+        this.pieceCounters.set('br', 2);
+        this.pieceCounters.set('bn', 2);
+        this.pieceCounters.set('bb', 2);
+        this.pieceCounters.set('bq', 2);
+        this.pieceCounters.set('bp', 8);
         return startingChessBoard
     }
 
@@ -379,6 +466,7 @@ class Game {
 
     copyGame() {
         const newGame = new Game()
+        newGame.playerTurnToMoveIsWhite = this.playerTurnToMoveIsWhite
         newGame.chessBoard = this.chessBoard
         newGame.chess = this.chess
         newGame.whiteDeck = this.whiteDeck
@@ -389,9 +477,11 @@ class Game {
         newGame.blackUsedCards = this.blackUsedCards
         newGame.continuousCards = this.continuousCards
         newGame.canPlayCard = this.canPlayCard
-        newGame.playerTurnToMoveIsWhite = this.playerTurnToMoveIsWhite
         newGame.whiteKingInCheck = this.whiteKingInCheck
         newGame.blackKingInCheck = this.blackKingInCheck
+        newGame.nQueens = this.nQueens
+        newGame.pieceCounters = this.pieceCounters
+        newGame.pieceCounters = this.pieceCounters
         newGame.selectedItems = this.selectedItems
         newGame.executeAction = this.executeAction
         newGame.onClick = this.onClick

@@ -1,12 +1,10 @@
-import React from 'react'
-import SideBar from './SideBar'
+import React, {useEffect} from 'react'
 import ChessBoard from "./ChessBoard"
 import { useState } from 'react'
 import Game from '../model/chess/chess'
 import Hand from './Hand'
-import {Deck, DiscardPile, CurrentCard} from './Deck'
+import {Deck, DiscardPile} from './Deck'
 import './ChessGame.css'
-import {cardsData} from '../model/cards/cards'
 
 function GamePanel() {
     const [gameState, setGameState] = useState(new Game());
@@ -20,6 +18,7 @@ function GamePanel() {
     const [deadWhitePieces, setDeadWhitePieces] = useState([]);
     const [deadBlackPieces, setDeadBlackPieces] = useState([]);
     const [isCardPlayed, setIsCardPlayed] = useState(false);
+    // const [whiteCardInUse, setWhiteCardInUse] = useState(null);
     
     const [playerTurnToMoveIsWhite, setPlayerTurnToMoveIsWhite] = useState(true);
     const [whiteKingInCheck, setWhiteKingInCheck] = useState(false);
@@ -50,11 +49,11 @@ function GamePanel() {
             return
         }
         // Apply the card effect based on who played it
-
         gameState.playCard(card, isWhite);
-        playerTurnToMoveIsWhite ? setWhiteHand(gameState.getWhiteHand()) : setBlackHand(gameState.getBlackHand());
+        setGameState(gameState.copyGame());
+        // isWhite && setWhiteCardInUse(card);
+        playerTurnToMoveIsWhite ? setWhiteHand([...gameState.getWhiteHand()]) : setBlackHand([...gameState.getBlackHand()]);
         playerTurnToMoveIsWhite ? setWhiteDiscardPile(gameState.whiteUsedCards) : setBlackDiscardPile(gameState.blackUsedCards);
-        // setGameState({ ...gameState });
     };
 
     // Function to draw a card from the deck
@@ -72,7 +71,7 @@ function GamePanel() {
         // console.log("executeAction is called.")
         gameState.executeAction()
         setIsCardPlayed(true)
-        // setGameState({ ...gameState });
+        setGameState(gameState.copyGame());
     }
 
     const revertGameState = () => {
@@ -114,7 +113,8 @@ function GamePanel() {
             {playerTurnToMoveIsWhite && (
                 <div className="game-info">
                     <Hand hand={whiteHand} onCardClick={ handleCardPlay } isWhite={true} />
-                    <Deck count={gameState.getWhiteDeck().length} />
+                    <Deck count={whiteDeck.length} />
+                    {/*<CardInUse cardInUse={whiteCardInUse} isWhite={true} setWhiteCardInUse={setWhiteCardInUse} />*/}
                     <DiscardPile topCard={whiteDiscardPile[whiteDiscardPile.length - 1]} onClick={cancelPlayedCard} isWhite={true} />
                 </div>
             )}
