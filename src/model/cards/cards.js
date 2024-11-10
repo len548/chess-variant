@@ -1,4 +1,5 @@
 import * as effects from './'
+import {adultery} from "./adultery.js";
 
 export const cardsData = {
     "cards": [
@@ -240,7 +241,7 @@ export const cardsData = {
         "id": "adultery",
         "name": "Adultery",
         "description": "If the adjacent square next to your KING is vacant, move your opponent's QUEEN into that square. Queen changes sides and is now your piece. Play this card on your turn instead of your move.",
-        "effect": null,
+        "effect": effects.adultery,
         "points": 5,
         "uniqueness": true,
         "continuousEffect": false

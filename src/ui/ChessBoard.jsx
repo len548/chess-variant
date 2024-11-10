@@ -3,6 +3,7 @@ import Board from '../assets/chessBoard.png'
 import { Stage, Layer } from 'react-konva';
 import piecemap from './piecemap'
 import Piece from './Piece'
+import EmptySquare from "./EmptySquare.jsx";
 
 function ChessBoard(
     {
@@ -74,8 +75,7 @@ function ChessBoard(
         var whiteCheckmated = false
 
         const update = currentGame.movePiece(selectedID, finalPosition, playerTurnToMoveIsWhite)
-        console.log(update)
-        if (update === "invalid move" || update === "moved in the same position." || update === "user tried to capture their own piece") {
+        if (update === "invalid move" || update === "moved in the same position." || update === "user tried to capture their own piece" || "piece cannot move this turn") {
             setDraggedPieceTargetId("")
             return
         } else if (update === "b is in check" || update === "w is in check") { 
@@ -120,7 +120,7 @@ function ChessBoard(
                             {row.map((square) => {
                                 if (square.isOccupied()) {
                                     return (
-                                        <Piece 
+                                        <Piece
                                             x = {square.getCanvasCoord()[0]}
                                             y = {square.getCanvasCoord()[1]} 
                                             imgurls = {piecemap[square.getPiece().name]}
@@ -136,9 +136,18 @@ function ChessBoard(
                                             blackKingInCheck = {blackKingInCheck}
                                             gameState = {gameState}
                                             selectedItems = {selectedItems}
-                                        />)
+                                        />
+                                    )
                                 } else {
-                                    return 
+                                    return (
+                                        <EmptySquare
+                                            j = {square.getCoord()[0]}
+                                            i = {square.getCoord()[1]}
+                                            x = {square.getCanvasCoord()[0]}
+                                            y = {square.getCanvasCoord()[1]}
+                                            onClick = { onClick }
+                                        />
+                                    )
                                 }
                             })}
                         </React.Fragment>

@@ -24,6 +24,7 @@ class Game {
         this.canPlayCard = true;
         this.whiteCardInUse = null;
         this.blackCardInUse = null;
+        this.isPieceMoved = false;
 
         this.toAlphabet = {
             0:"a", 1:"b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g", 7: "h"
@@ -44,55 +45,38 @@ class Game {
         this.nQueens = 1
 
         this.selectedItems = []
-        this.executeAction = function(isWhite) {
-            if (isWhite) {
-                this.canPlayCard = false;
-                this.canMovePiece = false;
-            }
-            // isWhite ? this.discardCard(whiteCardInUse.id, isWhite) : this.discardCard(blackCardInUse.id, isWhite)
-        }
+        this.executeAction = function(isWhite) {}
         this.onClick = function() {}
         this.cancelTheCurrentCard = function () {}
-            // function(isWhite) {
-            // if (isWhite) {
-            //     if (whiteCardInUse) {
-            //         this.whiteHand.push(whiteCardInUse);
-            //         this.whiteCardInUse = null;
-            //     }
-            // }
-            // else {
-            //     if (blackCardInUse){
-            //         this.blackHand.push(blackCardInUse);
-            //         this.blackCardInUse = null;
-            //     }
-            // }
-        // }
+
     }
 
+    movePieceForcefully(pieceId, to) {
+        const yx = this.findPiece(this.getBoard(), pieceId);
 
+    }
 
     changePieceColour(pieceId) {
-        const yx = this.findPiece(this.getBoard(), pieceId);
         const currentBoard = this.getBoard();
+        const yx = this.findPiece(currentBoard, pieceId);
         const oldPiece = currentBoard[yx[1]][yx[0]].getPiece();
-       if (oldPiece) {
-           console.log(oldPiece)
-           const newColor = oldPiece.color === 'white' ? 'black' : 'white'; // Toggle color
-           // const newPiece = { type: piece.type, color: newColor };
-           // console.log(newPiece);
-           // this.chess.remove(square); // Remove the old piece
-           // this.chess.put(newPiece, square); // Place the new piece with updated color
-           console.log(newColor)
-           const newPieceType = newColor.concat(oldPiece.id.substring(1, 2));
-           const num = this.pieceCounters.get(newPieceType);
-           this.pieceCounters.set(newPieceType, num+1);
+        if (oldPiece) {
+           const newColor = oldPiece.color === 'white' ? 'black' : 'white';
+           const newPieceType = newColor[0].concat(oldPiece.id.substring(1, 2));
+           const num = this.pieceCounters.get(newPieceType) + 1;
+           this.pieceCounters.set(newPieceType, num);
            const newPieceId = newPieceType.concat(num);
-           console.log(newPieceId)
            const newPiece = new ChessPiece(oldPiece.name, oldPiece.isAttacked, newColor, newPieceId)
            this.removePiece(pieceId);
            this.putPiece(newPiece, yx);
-           console.log(newPiece);
+           return newPieceId;
+
+           this.chess.put({type: newPieceType, color: newColor}, )
        }
+    }
+
+    movePieceForcefully(pieceId, to) {
+
     }
     
     // return drawn card
@@ -134,7 +118,7 @@ class Game {
         let selectedCards = deck.slice(0, count);
 
         // Append "War Casualties" card to selected cards
-        selectedCards.push(deck.find(card => card.name === "Treachery"));
+        selectedCards.push(deck.find(card => card.name === "Adultery"));
 
         return selectedCards;
 
@@ -151,14 +135,9 @@ class Game {
         const cardToPlay = isWhite ? this.whiteHand.find(c => c.id === card.id) : this.blackHand.find(c => c.id === card.id);
         if (cardToPlay){
             cardToPlay.effect(this, isWhite);
-            console.log(cardToPlay.id)
             const test = isWhite ? this.whiteHand.filter(item => item.id !== card.id) : this.blackHand.filter(item => item.id !== cardToPlay.id)
-//            console.log(test);
             isWhite ? this.whiteCardInUse = card : this.blackCardInUse = card;
-//            console.log(cardToPlay);
             this.discardCard(card.id, isWhite);
-            console.log("After filtering: " + isWhite ? this.whiteHand.length : this.blackHand.length)
-
         }
     }
 
@@ -181,7 +160,6 @@ class Game {
         const x = pieceCoordinates[0]
         const y = pieceCoordinates[1]
         const square = this.toAlphabet[y] + x.toString();
-        console.log(square);
         currentBoard[y][x].setPiece(null)
         this.chess.remove(square)
     }
@@ -190,17 +168,13 @@ class Game {
     * square: yx*/
     putPiece(piece, xy) {
         const currentBoard = this.getBoard()
-        console.log(xy);
+        if (this.findPiece(currentBoard, piece.id)) return "The piece is already on the board"
         const x = xy[0];
         const y = xy[1];
         currentBoard[y][x].setPiece(piece);
         this.setBoard(currentBoard);
         const square = this.toAlphabet[x] + (8-y).toString();
-        console.log(piece)
-        console.log(square);
-        console.log(this.getBoard()[y][x]);
-        const newPiece = {type: piece.name, color: piece.color};
-        console.log(newPiece);
+        const newPiece = {type: piece.id[1], color: piece.id[0]};
         this.chess.put(newPiece, square);
     }
     
@@ -216,10 +190,13 @@ class Game {
         this.playerTurnToMoveIsWhite = !this.playerTurnToMoveIsWhite;
         this.selectedItems = []
         this.canPlayCard = true;
+        this.isPieceMoved = false;
     }
 
     movePiece(pieceID, to){
-
+        if (this.isPieceMoved) {
+            return "piece cannot move this turn"
+        }
         const to2D =  {
             105:0, 195:1, 285: 2, 375: 3, 465: 4, 555: 5, 645: 6, 735: 7
         }
@@ -328,6 +305,7 @@ class Game {
         if (check === " is in check") {
             return this.chess.turn() + check
         }
+        this.isPieceMoved = true;
 
         this.setBoard(currentBoard)
     }
@@ -446,12 +424,12 @@ class Game {
         this.pieceCounters.set('wr', 2);
         this.pieceCounters.set('wn', 2);
         this.pieceCounters.set('wb', 2);
-        this.pieceCounters.set('wq', 2);
+        this.pieceCounters.set('wq', 1);
         this.pieceCounters.set('wp', 8);
         this.pieceCounters.set('br', 2);
         this.pieceCounters.set('bn', 2);
         this.pieceCounters.set('bb', 2);
-        this.pieceCounters.set('bq', 2);
+        this.pieceCounters.set('bq', 1);
         this.pieceCounters.set('bp', 8);
         return startingChessBoard
     }
@@ -483,6 +461,7 @@ class Game {
         newGame.pieceCounters = this.pieceCounters
         newGame.pieceCounters = this.pieceCounters
         newGame.selectedItems = this.selectedItems
+        newGame.isPieceMoved = this.isPieceMoved
         newGame.executeAction = this.executeAction
         newGame.onClick = this.onClick
         newGame.cancelTheCurrentCard = this.cancelTheCurrentCard
