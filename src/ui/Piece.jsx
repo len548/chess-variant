@@ -20,6 +20,7 @@ const Piece = (props) => {
     }
 
     return <Image image={image}
+         className = {"Piece"}
          x = {props.x - 90}
          y = {props.y - 90}
          draggable = {(props.isWhite && props.playerTurnToMoveIsWhite) || (!props.isWhite && !props.playerTurnToMoveIsWhite)}
