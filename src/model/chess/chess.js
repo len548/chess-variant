@@ -51,11 +51,6 @@ class Game {
 
     }
 
-    movePieceForcefully(pieceId, to) {
-        const yx = this.findPiece(this.getBoard(), pieceId);
-
-    }
-
     changePieceColour(pieceId) {
         const currentBoard = this.getBoard();
         const yx = this.findPiece(currentBoard, pieceId);
@@ -75,9 +70,6 @@ class Game {
        }
     }
 
-    movePieceForcefully(pieceId, to) {
-
-    }
     
     // return drawn card
     drawCard() {
@@ -118,7 +110,7 @@ class Game {
         let selectedCards = deck.slice(0, count);
 
         // Append "War Casualties" card to selected cards
-        selectedCards.push(deck.find(card => card.name === "Adultery"));
+        selectedCards.push(deck.find(card => card.id === "brotherhood"));
 
         return selectedCards;
 
@@ -168,7 +160,7 @@ class Game {
     * square: yx*/
     putPiece(piece, xy) {
         const currentBoard = this.getBoard()
-        if (this.findPiece(currentBoard, piece.id)) return "The piece is already on the board"
+        if (this.findPiece(currentBoard, piece.id)) return "This piece is already on the board"
         const x = xy[0];
         const y = xy[1];
         currentBoard[y][x].setPiece(piece);
@@ -237,11 +229,16 @@ class Game {
 
         let moveAttempt
         try{
-            // eslint-disable-next-line no-unused-vars
             moveAttempt = this.chess.move(move)
         } catch (error) {
-            // console.log(moveAttempt)
             return "invalid move"
+        }
+        if (this.continuousCards.find(card => card.id === "brotherhood")) {
+            if (moveAttempt.captured === moveAttempt.piece) {
+                const undo = this.chess.undo();
+                console.log("Brotherhood: capturing pieces of the same type is prohibited!")
+                return "invalid move";
+            }
         }
 
         // e - en passant caputre

@@ -466,7 +466,7 @@ export const cardsData = {
         "id": "brotherhood",
         "name": "BROTHERHOOD",
         "description": "No piece may capture the same type of piece as it's own type.",
-        "effect": null,
+        "effect": effects.brotherhood,
         "points": 2,
         "uniqueness": true,
         "continuousEffect": false
