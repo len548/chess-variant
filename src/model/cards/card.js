@@ -8,7 +8,6 @@ class Card {
         this.uniqueness = uniqueness // boolean
         this.contiuing_effect = contiuing_effect // boolean
     }
-
 }
 
 export default Card;
