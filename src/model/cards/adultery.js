@@ -31,8 +31,8 @@ export const adultery = (gameState, isWhite) => {
             gameState.cancelTheCurrentCard(card, isWhite);
             return
         }
-        if (e.target.attrs.className === "EmptySquare") {
 
+        if (e.target.attrs.className === "EmptySquare") {
             const i = e.target.attrs.i;
             const j = e.target.attrs.j;
             const board = gameState.getBoard();

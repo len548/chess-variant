@@ -45,9 +45,37 @@ class Game {
         this.nQueens = 1
 
         this.selectedItems = []
-        this.executeAction = function(isWhite) {}
+        this.executeAction = function() {
+            this.canPlayCard = false;
+        }
         this.onClick = function() {}
-        this.cancelTheCurrentCard = function () {}
+        this.cancelTheCurrentCard = function (card, isWhite) {
+            if (!this.canPlayCard) {
+                console.log("you have played already a card this turn")
+                return
+            }
+            this.selectedItems = []
+            if (isWhite) {
+                if (this.whiteUsedCards.length < 1) {
+                    console.log("There is no card played!")
+                    return
+                }
+                const usedCard = this.whiteUsedCards[this.whiteUsedCards.length - 1];
+                this.whiteUsedCards = this.whiteUsedCards.filter(c => c.id !== usedCard.id);
+                console.log(usedCard)
+                this.whiteHand.push(usedCard);
+            }
+            else {
+                if (this.blackUsedCards.length < 1) {
+                    console.log("There is no card played!")
+                    return
+                }
+                const usedCard = this.blackUsedCards[this.blackUsedCards.length - 1];
+                this.blackUsedCards = this.blackUsedCards.filter(c => c.id !== usedCard.id);
+                console.log(`usedCard: ${usedCard} back to the black hand`)
+                this.blackHand.push(usedCard);
+            }
+        }
 
     }
 
@@ -65,8 +93,6 @@ class Game {
            this.removePiece(pieceId);
            this.putPiece(newPiece, yx);
            return newPieceId;
-
-           this.chess.put({type: newPieceType, color: newColor}, )
        }
     }
 
@@ -98,7 +124,6 @@ class Game {
         }
         // While there remain elements to shuffle...
         while (currentIndex !== 0) {
-
             // Pick a remaining element...
             randomIndex = Math.floor(Math.random() * currentIndex);
             currentIndex--;
@@ -109,8 +134,9 @@ class Game {
         }
         let selectedCards = deck.slice(0, count);
 
-        // Append "War Casualties" card to selected cards
-        selectedCards.push(deck.find(card => card.id === "brotherhood"));
+        // this is for debug, shouldn't be included in upstream
+        const card_to_debug = deck.find(card => card.id === "call_to_arms")
+        if (card_to_debug) selectedCards.push(card_to_debug);
 
         return selectedCards;
 

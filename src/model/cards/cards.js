@@ -106,7 +106,7 @@ export const cardsData = {
         "id": "call_to_arms",
         "name": "Call to Arms",
         "description": "Add 1 or 2 new pawns to any unoccupied squares on the 2nd Rank.",
-        "effect": null,
+        "effect": effects.callToArms,
         "points": 3,
         "uniqueness": false,
         "continuousEffect": false
