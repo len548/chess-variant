@@ -1,11 +1,4 @@
 export const warCasualties = (gameState, isWhite) => {
-    console.log('hello from warCasualties.js')
-    /* TO-DO:
-     - add casualities to the gameState, -> boolean true
-     - change the gameState to 
-     - 
-    */
-
     gameState.onClick = (e) => {
         const pieceId = e.target.attrs.id;
         if (pieceId[1] !== "p") {
@@ -14,23 +7,21 @@ export const warCasualties = (gameState, isWhite) => {
         }
         if (isWhite && pieceId[0] === "b" || !isWhite && pieceId[0] === "w") {
             if (gameState.selectedItems.includes(pieceId)) {
-                gameState.selectedItems.filter(piece => piece === pieceId);
                 gameState.selectedItems = gameState.selectedItems.filter(item => item !== pieceId);
-                console.log("removed the pown")
+                console.log("removed the pawn")
             } 
             else if (gameState.selectedItems.length >= 2) {
                 console.log("You can only select up to 2 pawns to remove")
             }
             else {
                 gameState.selectedItems.push(pieceId);
-                console.log("selected the pown is added to the list")
+                console.log("selected the pawn is added to the list")
             }
         }
     }
 
     // when the player clicks the confirm button, the selected pawns will be removed from the board
     gameState.executeAction = () => {
-        console.log("executeAction is called.")
         if (gameState.selectedItems.length === 0) {
             console.log("You must select at least one pawn to remove")
             return
@@ -46,7 +37,7 @@ export const warCasualties = (gameState, isWhite) => {
 
     gameState.cancelTheCurrentCard = (card, isWhite) => {
         console.log("cancelTheCurrentCard is called. " + isWhite);
-        if (!gameState.canPlayCard) {
+        if (!gameState.canPlayCard(isWhite)) {
             console.log("You have already played a card this turn.")
             return
         }

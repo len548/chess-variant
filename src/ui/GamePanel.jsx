@@ -62,21 +62,18 @@ function GamePanel() {
         if (!card) {
             return
         }
-        playerTurnToMoveIsWhite ? setWhiteHand(gameState.getWhiteHand()) : setBlackHand(gameState.getBlackHand());
-        setGameState({ ...gameState });
+        const newGame = gameState.copyGame()
+        setGameState(newGame);
+        playerTurnToMoveIsWhite ? setWhiteHand(newGame.getWhiteHand()) : setBlackHand(newGame.getBlackHand());
     };
 
     // to confirm the action of the card
     const executeAction = () => {
-        // console.log("executeAction is called.")
         gameState.executeAction()
         setIsCardPlayed(true)
         setGameState(gameState.copyGame());
     }
 
-    const revertGameState = () => {
-        // TO-DO: Retrieve the gameState from the database
-    };
 
     const endTurn = () => {
         // TO-DO: Store the gameState in the database
