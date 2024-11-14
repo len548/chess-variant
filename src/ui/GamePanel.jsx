@@ -3,11 +3,12 @@ import ChessBoard from "./ChessBoard"
 import { useState } from 'react'
 import Game from '../model/chess/chess'
 import Hand from './Hand'
-import {Deck, DiscardPile} from './Deck'
+import Deck from './Deck'
+import DiscardPile from "./DiscardPile"
 import './ChessGame.css'
 
-function GamePanel() {
-    const [gameState, setGameState] = useState(new Game());
+function GamePanel({ gameInstance }) {
+    const [gameState, setGameState] = useState(gameInstance || new Game());
 
     const [whiteDeck, setWhiteDeck] = useState(gameState.getWhiteDeck());
     const [blackDeck, setBlackDeck] = useState(gameState.getBlackDeck());
@@ -19,7 +20,7 @@ function GamePanel() {
     const [deadBlackPieces, setDeadBlackPieces] = useState([]);
     const [isCardPlayed, setIsCardPlayed] = useState(false);
     // const [whiteCardInUse, setWhiteCardInUse] = useState(null);
-    
+
     const [playerTurnToMoveIsWhite, setPlayerTurnToMoveIsWhite] = useState(true);
     const [whiteKingInCheck, setWhiteKingInCheck] = useState(false);
     const [blackKingInCheck, setBlackKingInCheck] = useState(false);
