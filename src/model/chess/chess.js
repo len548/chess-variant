@@ -213,7 +213,7 @@ class Game {
 
     movePiece(pieceID, to){
         if (this.isPieceMoved) {
-            return "piece cannot move this turn"
+            return "piece cannot be moved this turn anymore"
         }
         const to2D =  {
             105:0, 195:1, 285: 2, 375: 3, 465: 4, 555: 5, 645: 6, 735: 7
@@ -263,7 +263,7 @@ class Game {
             if (moveAttempt.captured === moveAttempt.piece) {
                 const undo = this.chess.undo();
                 console.log("Brotherhood: capturing pieces of the same type is prohibited!")
-                return "invalid move";
+                return "Brotherhood: capturing pieces of the same type is prohibited!";
             }
         }
 
@@ -307,6 +307,8 @@ class Game {
         if (reassign !== "user tried to capture their own piece") {
             currentBoard[y][x].setPiece(null)
         } else {
+            this.isPieceMoved = true;
+            this.setBoard(currentBoard)
             return reassign
         }
 
@@ -314,23 +316,29 @@ class Game {
             // const temp = currentBoard[to_y][to_x]
             currentBoard[to_y][to_x].setPiece(originalPiece)
             currentBoard[y][x].setPiece(null)
+            this.isPieceMoved = true;
+            this.setBoard(currentBoard)
             return "piece moved to an empty cell"
         }
 
         const checkMate = this.chess.isCheckmate() ? " has been checkmated" : " has not been checkmated"
         // console.log(this.chess.turn() + checkMate)
         if (checkMate === " has been checkmated") {
+            this.isPieceMoved = true;
+            this.setBoard(currentBoard)
             return this.chess.turn() + checkMate
         }
 
         const check = this.chess.inCheck() ? " is in check" : " is not in check"
         // console.log(this.chess.turn() + check)
         if (check === " is in check") {
+            this.isPieceMoved = true;
+            this.setBoard(currentBoard)
             return this.chess.turn() + check
         }
         this.isPieceMoved = true;
-
         this.setBoard(currentBoard)
+        return `${moveAttempt.color}${moveAttempt.piece} moved to ${moveAttempt.to} from ${moveAttempt.from}`
     }
 
     isCastle(moveAttempt) {
