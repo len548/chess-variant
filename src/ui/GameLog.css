@@ -1,0 +1,48 @@
+/* GameLog.css */
+.game-log {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: 10px;
+    max-height: 600px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.game-log h3 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.game-log ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.game-log li {
+    font-size: 14px;
+    padding: 8px 0;
+    border-bottom: 1px solid #ccc;
+    transition: background-color 0.3s ease;
+}
+
+.game-log li:last-child {
+    border-bottom: none;
+}
+
+/* Highlight effect for new messages */
+.highlight {
+    background-color: #ffffa1; /* Highlight color */
+    animation: fadeOut 2s ease-in-out forwards; /* Smooth fade-out effect */
+}
+
+/* Fade-out animation */
+@keyframes fadeOut {
+    0% {
+        background-color: #ffffa1;
+    }
+    100% {
+        background-color: transparent;
+    }
+}

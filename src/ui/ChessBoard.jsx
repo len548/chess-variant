@@ -13,7 +13,8 @@ function ChessBoard(
         whiteKingInCheck, 
         setWhiteKingInCheck, 
         blackKingInCheck, 
-        setBlackKingInCheck
+        setBlackKingInCheck,
+        setGameLog
     }
 ) {
     const [draggedPieceTargetId, setDraggedPieceTargetId] = useState("")
@@ -73,10 +74,14 @@ function ChessBoard(
         var blackKingInCheck = false
         var blackCheckmated = false 
         var whiteCheckmated = false
-
+        const exceptions = ["invalid move", "moved in the same position.", "user tried to capture their own piece", "piece cannot be moved this turn anymore"]
         const update = currentGame.movePiece(selectedID, finalPosition, playerTurnToMoveIsWhite)
-        if (update === "invalid move" || update === "moved in the same position." || update === "user tried to capture their own piece" || "piece cannot move this turn") {
+        if (exceptions.includes(update)) {
             setDraggedPieceTargetId("")
+            setGameLog((prevLog) => [
+                ...prevLog,
+                `${playerTurnToMoveIsWhite ? "White" : "Black"}: ${update}`
+            ]);
             return
         } else if (update === "b is in check" || update === "w is in check") { 
             // change the fill of the enemy king or your king based on which side is in check. 
@@ -93,6 +98,10 @@ function ChessBoard(
                 whiteCheckmated = true
             }
         }
+        setGameLog((prevLog) => [
+            ...prevLog,
+            `${playerTurnToMoveIsWhite ? "White" : "Black"}: ${update}`
+        ]);
         setDraggedPieceTargetId("")
         setWhiteKingInCheck(whiteKingInCheck)
         setBlackKingInCheck(blackKingInCheck)
