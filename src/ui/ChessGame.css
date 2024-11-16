@@ -5,6 +5,8 @@
     justify-content: start;
     padding: 20px;
     gap: 20px;
+    flex: 3; /* Adjust the width ratio */
+    max-width: 70%; /* Optional max-width for the chess-game section */
 }
 
 .chess-board-container {
@@ -119,4 +121,25 @@ button:hover {
 .card.black-player {
     background-color: #222;
     color: white;
+}
+
+.game-container {
+    display: flex; /* Enables horizontal layout */
+    align-items: flex-start; /* Align items at the top */
+    gap: 20px; /* Space between the chess game and the log */
+    padding: 10px; /* Optional padding around the container */
+}
+
+.chess-game {
+
+}
+
+.game-log {
+    flex: 1; /* Adjust the width ratio */
+    max-width: 30%; /* Optional max-width for the log section */
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: 10px;
+    max-height: 600px; /* Limit height and enable scrolling */
+    overflow-y: auto;
 }

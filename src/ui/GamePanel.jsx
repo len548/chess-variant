@@ -5,6 +5,7 @@ import Game from '../model/chess/chess'
 import Hand from './Hand'
 import Deck from './Deck'
 import DiscardPile from "./DiscardPile"
+import GameLog from "./GameLog.jsx";
 import './ChessGame.css'
 
 function GamePanel({ gameInstance }) {
@@ -20,6 +21,7 @@ function GamePanel({ gameInstance }) {
     const [deadBlackPieces, setDeadBlackPieces] = useState([]);
     const [isCardPlayed, setIsCardPlayed] = useState(false);
     // const [whiteCardInUse, setWhiteCardInUse] = useState(null);
+    const [gameLog, setGameLog] = useState([]);
 
     const [playerTurnToMoveIsWhite, setPlayerTurnToMoveIsWhite] = useState(true);
     const [whiteKingInCheck, setWhiteKingInCheck] = useState(false);
@@ -47,14 +49,25 @@ function GamePanel({ gameInstance }) {
     const handleCardPlay = (card, isWhite) => {
         if (isCardPlayed) {
             console.log("You can only play one card per turn.")
+            setGameLog((prevLog) => [
+                ...prevLog,
+                `${isWhite ? "White" : "Black"} cannot play ${card.name} because only one card can be played per turn.`
+            ])
             return
         }
         // Apply the card effect based on who played it
         gameState.playCard(card, isWhite);
         setGameState(gameState.copyGame());
-        // isWhite && setWhiteCardInUse(card);
-        playerTurnToMoveIsWhite ? setWhiteHand([...gameState.getWhiteHand()]) : setBlackHand([...gameState.getBlackHand()]);
-        playerTurnToMoveIsWhite ? setWhiteDiscardPile(gameState.whiteUsedCards) : setBlackDiscardPile(gameState.blackUsedCards);
+        setGameLog((prevLog) => [
+            ...prevLog,
+            `${isWhite ? "White" : "Black"} played ${card.name}`
+        ]);
+        playerTurnToMoveIsWhite
+            ? setWhiteHand([...gameState.getWhiteHand()])
+            : setBlackHand([...gameState.getBlackHand()]);
+        playerTurnToMoveIsWhite
+            ? setWhiteDiscardPile(gameState.whiteUsedCards)
+            : setBlackDiscardPile(gameState.blackUsedCards);
     };
 
     // Function to draw a card from the deck
@@ -65,7 +78,9 @@ function GamePanel({ gameInstance }) {
         }
         const newGame = gameState.copyGame()
         setGameState(newGame);
-        playerTurnToMoveIsWhite ? setWhiteHand(newGame.getWhiteHand()) : setBlackHand(newGame.getBlackHand());
+        playerTurnToMoveIsWhite
+            ? setWhiteHand(newGame.getWhiteHand())
+            : setBlackHand(newGame.getBlackHand());
     };
 
     // to confirm the action of the card
@@ -85,39 +100,45 @@ function GamePanel({ gameInstance }) {
     };
 
     return (
-        <div className="chess-game">
-            {!playerTurnToMoveIsWhite && (
-                <div className="game-info">
-                    <Hand hand={blackHand} onCardClick={ handleCardPlay } isWhite={false} />
-                    <Deck count={blackDeck.length} />
-                    <DiscardPile topCard={blackDiscardPile[blackDiscardPile.length - 1]} isWhite={false} />
+        <div className="game-container">
+            <div className="chess-game">
+                {!playerTurnToMoveIsWhite && (
+                    <div className="game-info">
+                        <Hand hand={blackHand} onCardClick={handleCardPlay} isWhite={false} />
+                        <Deck count={blackDeck.length} />
+                        <DiscardPile topCard={blackDiscardPile[blackDiscardPile.length - 1]} isWhite={false} />
+                    </div>
+                )}
+                <div className="chess-board-container">
+                    <ChessBoard
+                        gameState={gameState}
+                        setGameState={setGameState}
+                        playerTurnToMoveIsWhite={playerTurnToMoveIsWhite}
+                        whiteKingInCheck={whiteKingInCheck}
+                        setWhiteKingInCheck={setWhiteKingInCheck}
+                        blackKingInCheck={blackKingInCheck}
+                        setBlackKingInCheck={setBlackKingInCheck}
+                        setGameLog={setGameLog}
+                    />
+                    <div className="button-container">
+                        <button onClick={drawCard}>Draw Card</button>
+                        <button onClick={endTurn}>End Turn</button>
+                        <button onClick={cancelPlayedCard}>Cancel Card</button>
+                        <button onClick={executeAction}>Confirm</button>
+                    </div>
                 </div>
-            )}
-            <div className='chess-board-container'>
-                <ChessBoard
-                    gameState={gameState} setGameState={setGameState}
-                    playerTurnToMoveIsWhite={playerTurnToMoveIsWhite}
-                    whiteKingInCheck={whiteKingInCheck} setWhiteKingInCheck={setWhiteKingInCheck}
-                    blackKingInCheck={blackKingInCheck} setBlackKingInCheck={setBlackKingInCheck}
-                />
-                <div className="button-container">
-                    {/* <CurrentCard card={currentCard} /> */}
-                    <button onClick={ drawCard }>Draw Card</button>
-                    <button onClick={ endTurn }>End Turn</button>
-                    <button onClick={ cancelPlayedCard }>Cancel Card</button>
-                    <button onClick={ executeAction } >Confirm</button>
-                </div>
+                {playerTurnToMoveIsWhite && (
+                    <div className="game-info">
+                        <Hand hand={whiteHand} onCardClick={handleCardPlay} isWhite={true} />
+                        <Deck count={whiteDeck.length} />
+                        <DiscardPile topCard={whiteDiscardPile[whiteDiscardPile.length - 1]} onClick={cancelPlayedCard} isWhite={true} />
+                    </div>
+                )}
             </div>
-            {playerTurnToMoveIsWhite && (
-                <div className="game-info">
-                    <Hand hand={whiteHand} onCardClick={ handleCardPlay } isWhite={true} />
-                    <Deck count={whiteDeck.length} />
-                    {/*<CardInUse cardInUse={whiteCardInUse} isWhite={true} setWhiteCardInUse={setWhiteCardInUse} />*/}
-                    <DiscardPile topCard={whiteDiscardPile[whiteDiscardPile.length - 1]} onClick={cancelPlayedCard} isWhite={true} />
-                </div>
-            )}
+            <GameLog log={gameLog} />
         </div>
     );
+
 }
 
 export default GamePanel
