@@ -6,7 +6,7 @@ const Deck = ({ count }) => {
       </div>
     );
   };
-  
+
   const DiscardPile = ({ topCard, onClick, isWhite }) => {
     return (
       <div className="discard-pile">
@@ -15,20 +15,6 @@ const Deck = ({ count }) => {
     );
   };
 
-  const CurrentCard = ({ card }) => {
-    return (
-      <div className="called-card">
-        {card ? <CardUI card={card} onClick={() => {}} /> : "No card called yet"}
-      </div>
-    );
-  }
 
-  const DeadPile = ({ topCard }) => {
-    return (
-      <div className="dead-pile">
-        {topCard ? <CardUI card={topCard} onClick={() => {}} /> : "No cards discarded yet"}
-      </div>
-    );
-  };
 
-export { Deck, DiscardPile, CurrentCard, DeadPile };
+export { Deck, DiscardPile };

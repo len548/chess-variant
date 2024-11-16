@@ -7,8 +7,8 @@ import {Deck, DiscardPile} from './Deck'
 import GameLog from "./GameLog.jsx";
 import './ChessGame.css'
 
-function GamePanel() {
-    const [gameState, setGameState] = useState(new Game());
+function GamePanel({gameParam}) {
+    const [gameState, setGameState] = useState(gameParam || new Game());
 
     const [whiteDeck, setWhiteDeck] = useState(gameState.getWhiteDeck());
     const [blackDeck, setBlackDeck] = useState(gameState.getBlackDeck());
@@ -21,13 +21,13 @@ function GamePanel() {
     const [isCardPlayed, setIsCardPlayed] = useState(false);
     // const [whiteCardInUse, setWhiteCardInUse] = useState(null);
     const [gameLog, setGameLog] = useState([]);
+    const [selectedItems, setSelectedItems] = useState(gameState.selectedItems);
 
     const [playerTurnToMoveIsWhite, setPlayerTurnToMoveIsWhite] = useState(true);
     const [whiteKingInCheck, setWhiteKingInCheck] = useState(false);
     const [blackKingInCheck, setBlackKingInCheck] = useState(false);
 
     const cancelPlayedCard = (card, isWhite) => {
-        console.log("cancelPlayedCard is called.")
         if (!isCardPlayed) {
             console.log("Card hasn't been played yet. so will return.")
             gameState.cancelTheCurrentCard(card, isWhite)
@@ -42,25 +42,19 @@ function GamePanel() {
             setBlackHand(gs.getBlackHand())
             setBlackDiscardPile(gs.getBlackUsedCards())
         }
-        setIsCardPlayed(false)
+        setIsCardPlayed(gs.canPlayCard)
     }
 
     const handleCardPlay = (card, isWhite) => {
         if (isCardPlayed) {
             console.log("You can only play one card per turn.")
-            setGameLog((prevLog) => [
-                ...prevLog,
-                `${isWhite ? "White" : "Black"} cannot play ${card.name} because only one card can be played per turn.`
-            ])
+            addLog(`${isWhite ? "White" : "Black"} cannot play ${card.name} because only one card can be played per turn.`)
             return
         }
-        // Apply the card effect based on who played it
+
         gameState.playCard(card, isWhite);
         setGameState(gameState.copyGame());
-        setGameLog((prevLog) => [
-            ...prevLog,
-            `${isWhite ? "White" : "Black"} played ${card.name}`
-        ]);
+        addLog(`${isWhite ? "White" : "Black"} played ${card.name}`);
         playerTurnToMoveIsWhite
             ? setWhiteHand([...gameState.getWhiteHand()])
             : setBlackHand([...gameState.getBlackHand()]);
@@ -84,9 +78,10 @@ function GamePanel() {
 
     // to confirm the action of the card
     const executeAction = () => {
-        gameState.executeAction()
+        const update = gameState.executeAction()
         setIsCardPlayed(true)
-        setGameState(gameState.copyGame());
+        const newgm = gameState.copyGame()
+        setGameState(newgm);
     }
 
 
@@ -96,6 +91,10 @@ function GamePanel() {
         // setGameState({ ...gameState });
         setPlayerTurnToMoveIsWhite(!playerTurnToMoveIsWhite);
         setIsCardPlayed(false);
+    };
+
+    const addLog = (message) => {
+        setGameLog((prevLog) => [...prevLog, message]);
     };
 
     return (
@@ -118,6 +117,8 @@ function GamePanel() {
                         blackKingInCheck={blackKingInCheck}
                         setBlackKingInCheck={setBlackKingInCheck}
                         setGameLog={setGameLog}
+                        selectedItems={selectedItems}
+                        setSelectedItems={setSelectedItems}
                     />
                     <div className="button-container">
                         <button onClick={drawCard}>Draw Card</button>
@@ -137,7 +138,6 @@ function GamePanel() {
             <GameLog log={gameLog} />
         </div>
     );
-
 }
 
 export default GamePanel

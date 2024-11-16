@@ -135,7 +135,7 @@ class Game {
         let selectedCards = deck.slice(0, count);
 
         // this is for debug, shouldn't be included in upstream
-        const card_to_debug = deck.find(card => card.id === "call_to_arms")
+        const card_to_debug = deck.find(card => card.id === "war_casualties")
         if (card_to_debug) selectedCards.push(card_to_debug);
 
         return selectedCards;
@@ -153,7 +153,6 @@ class Game {
         const cardToPlay = isWhite ? this.whiteHand.find(c => c.id === card.id) : this.blackHand.find(c => c.id === card.id);
         if (cardToPlay){
             cardToPlay.effect(this, isWhite);
-            const test = isWhite ? this.whiteHand.filter(item => item.id !== card.id) : this.blackHand.filter(item => item.id !== cardToPlay.id)
             isWhite ? this.whiteCardInUse = card : this.blackCardInUse = card;
             this.discardCard(card.id, isWhite);
         }
@@ -498,6 +497,10 @@ class Game {
         newGame.cancelTheCurrentCard = this.cancelTheCurrentCard
 
         return newGame        
+    }
+
+    setSelectedItems (list) {
+        this.selectedItems = list
     }
 }
 

@@ -14,12 +14,12 @@ function ChessBoard(
         setWhiteKingInCheck, 
         blackKingInCheck, 
         setBlackKingInCheck,
-        setGameLog
+        setGameLog,
+
     }
 ) {
     const [draggedPieceTargetId, setDraggedPieceTargetId] = useState("")
-    const [selectedItems, setSelectedItems] = useState([]);
-
+    const [selectedItems, setSelectedItems] = useState([])
     const startDragging = (e) => {
         setDraggedPieceTargetId(e.target.attrs.id)
     }
@@ -53,18 +53,18 @@ function ChessBoard(
         const currentGame = gameState
         const currentBoard = currentGame.getBoard()
         const finalPosition = inferCoord(e.target.x() + 90, e.target.y() + 90, currentBoard)
-        // console.log(`finalposition: ${finalPosition}`)
         const selectedId = draggedPieceTargetId
-        // console.log(`draggedPieceId: ${draggedPieceTargetId}`)
         movePiece(selectedId, finalPosition, currentGame)
     }
 
     const onClick = (e) => {
         gameState.onClick(e)
-        setSelectedItems(gameState.selectedItems)
-        setGameState(gameState.copyGame())
+        const newgm = gameState.copyGame()
+        setGameState(newgm)
+        setSelectedItems(newgm.selectedItems)
+        console.log("old", gameState.selectedItems)
+        console.log(newgm.selectedItems)
     }
-
 
     function movePiece(selectedID, finalPosition, currentGame) {
         //selectedID: wp1
@@ -143,8 +143,7 @@ function ChessBoard(
                                             playerTurnToMoveIsWhite = {playerTurnToMoveIsWhite}
                                             whiteKingInCheck = {whiteKingInCheck}
                                             blackKingInCheck = {blackKingInCheck}
-                                            gameState = {gameState}
-                                            selectedItems = {selectedItems}
+                                            isSelected = {selectedItems.includes(square.getPieceIdOnThisSquare())}
                                         />
                                     )
                                 } else {
@@ -155,6 +154,7 @@ function ChessBoard(
                                             x = {square.getCanvasCoord()[0]}
                                             y = {square.getCanvasCoord()[1]}
                                             onClick = { onClick }
+
                                         />
                                     )
                                 }
