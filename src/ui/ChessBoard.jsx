@@ -21,7 +21,8 @@ function ChessBoard(
     const [selectedItems, setSelectedItems] = useState([]);
 
     const startDragging = (e) => {
-        setDraggedPieceTargetId(e.target.attrs.id)
+        const pieceId = e.target?.attrs?.id
+        if (pieceId) setDraggedPieceTargetId(pieceId)
     }
     
     const inferCoord = (x, y, chessBoard) => {
@@ -52,10 +53,8 @@ function ChessBoard(
     const endDragging = (e) => {
         const currentGame = gameState
         const currentBoard = currentGame.getBoard()
-        const finalPosition = inferCoord(e.target.x() + 90, e.target.y() + 90, currentBoard)
-        // console.log(`finalposition: ${finalPosition}`)
+        const finalPosition = inferCoord(e.target?.attrs?.x + 90, e.target?.attrs?.y + 90, currentBoard)
         const selectedId = draggedPieceTargetId
-        // console.log(`draggedPieceId: ${draggedPieceTargetId}`)
         movePiece(selectedId, finalPosition, currentGame)
     }
 
@@ -108,6 +107,7 @@ function ChessBoard(
         setGameState(currentGame)
 
         if (blackCheckmated) {
+            console.log("blackCheckMated")
             alert("WHITE WON BY CHECKMATE!")
         } else if (whiteCheckmated) {
             alert("BLACK WON BY CHECKMATE!")

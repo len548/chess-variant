@@ -6,14 +6,6 @@ const Deck = ({ count }) => {
       </div>
     );
   };
-  
-  const DiscardPile = ({ topCard, onClick, isWhite }) => {
-    return (
-      <div className="discard-pile">
-        {topCard ? <CardUI card={topCard} onClick={onClick} isWhite={isWhite} /> : "No cards discarded yet"}
-      </div>
-    );
-  };
 
   const CurrentCard = ({ card }) => {
     return (
@@ -31,4 +23,4 @@ const Deck = ({ count }) => {
     );
   };
 
-export { Deck, DiscardPile, CurrentCard, DeadPile };
+export default Deck;
