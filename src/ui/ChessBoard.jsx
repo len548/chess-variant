@@ -3,6 +3,7 @@ import Board from '../assets/chessBoard.png'
 import { Stage, Layer } from 'react-konva';
 import piecemap from './piecemap'
 import Piece from './Piece'
+import EmptySquare from "./EmptySquare.jsx";
 
 function ChessBoard(
     {
@@ -12,14 +13,17 @@ function ChessBoard(
         whiteKingInCheck, 
         setWhiteKingInCheck, 
         blackKingInCheck, 
-        setBlackKingInCheck
+        setBlackKingInCheck,
+        setGameLog,
+        selectedItems,
+        setSelectedItems
     }
 ) {
     const [draggedPieceTargetId, setDraggedPieceTargetId] = useState("")
-    const [selectedItems, setSelectedItems] = useState([]);
 
     const startDragging = (e) => {
-        setDraggedPieceTargetId(e.target.attrs.id)
+        const pieceId = e.target?.attrs?.id
+        if (pieceId) setDraggedPieceTargetId(pieceId)
     }
     
     const inferCoord = (x, y, chessBoard) => {
@@ -50,8 +54,7 @@ function ChessBoard(
     const endDragging = (e) => {
         const currentGame = gameState
         const currentBoard = currentGame.getBoard()
-        const finalPosition = inferCoord(e.target.x() + 90, e.target.y() + 90, currentBoard)
-        // console.log(`finalposition: ${finalPosition}`)
+        const finalPosition = inferCoord(e.target?.attrs?.x + 90, e.target?.attrs?.y + 90, currentBoard)
         const selectedId = draggedPieceTargetId
         // console.log(`draggedPieceId: ${draggedPieceTargetId}`)
         movePiece(selectedId, finalPosition, currentGame)
@@ -59,16 +62,9 @@ function ChessBoard(
 
     const onClick = (e) => {
         gameState.onClick(e)
-        console.log("selectedItems: " + gameState.selectedItems)
-        setSelectedItems(gameState.selectedItems)
-        setGameState(gameState)
-    }
-
-    const onClickonSquare = (e) => {
-        // console.log("clicked on the board")
-        gameState.onClickOnSquare(e)
-        // console.log(gameState.onClickOnSquare)
-        setGameState(gameState)
+        const newgm = gameState.copyGame()
+        setGameState(newgm)
+        setSelectedItems(newgm.selectedItems)
     }
 
 
@@ -80,11 +76,14 @@ function ChessBoard(
         var blackKingInCheck = false
         var blackCheckmated = false 
         var whiteCheckmated = false
-
+        const exceptions = ["invalid move", "moved in the same position.", "user tried to capture their own piece", "piece cannot be moved this turn anymore"]
         const update = currentGame.movePiece(selectedID, finalPosition, playerTurnToMoveIsWhite)
-        console.log(update)
-        if (update === "invalid move" || update === "moved in the same position." || update === "user tried to capture their own piece") {
+        if (exceptions.includes(update)) {
             setDraggedPieceTargetId("")
+            setGameLog((prevLog) => [
+                ...prevLog,
+                `${playerTurnToMoveIsWhite ? "White" : "Black"}: ${update}`
+            ]);
             return
         } else if (update === "b is in check" || update === "w is in check") { 
             // change the fill of the enemy king or your king based on which side is in check. 
@@ -101,6 +100,10 @@ function ChessBoard(
                 whiteCheckmated = true
             }
         }
+        setGameLog((prevLog) => [
+            ...prevLog,
+            `${playerTurnToMoveIsWhite ? "White" : "Black"}: ${update}`
+        ]);
         setDraggedPieceTargetId("")
         setWhiteKingInCheck(whiteKingInCheck)
         setBlackKingInCheck(blackKingInCheck)
@@ -120,16 +123,15 @@ function ChessBoard(
             width: "720px",
             height: "720px"}}
         >
-            <Stage width={720} height={720} onClick={ (e) => { onClickonSquare(e) }}>
+            <Stage width={720} height={720}>
                 <Layer>
-                {gameState.getBoard().map((row, rowIndex) => {
+                {gameState.getBoard().map((row) => {
                     return (
-                        <React.Fragment key={rowIndex}>
-                            {row.map((square, colIndex) => {
+                        <React.Fragment>
+                            {row.map((square) => {
                                 if (square.isOccupied()) {
                                     return (
-                                        <Piece 
-                                            key = {`${rowIndex}-${colIndex}`}
+                                        <Piece
                                             x = {square.getCanvasCoord()[0]}
                                             y = {square.getCanvasCoord()[1]} 
                                             imgurls = {piecemap[square.getPiece().name]}
@@ -143,9 +145,19 @@ function ChessBoard(
                                             playerTurnToMoveIsWhite = {playerTurnToMoveIsWhite}
                                             whiteKingInCheck = {whiteKingInCheck}
                                             blackKingInCheck = {blackKingInCheck}
-                                            selectedItems = {selectedItems}
-                                        />)
+                                            isSelected = {selectedItems.includes(square.getPieceIdOnThisSquare())}
+                                        />
+                                    )
                                 } else {
+                                    return (
+                                        <EmptySquare
+                                            j = {square.getCoord()[0]}
+                                            i = {square.getCoord()[1]}
+                                            x = {square.getCanvasCoord()[0]}
+                                            y = {square.getCanvasCoord()[1]}
+                                            onClick = { onClick }
+                                        />
+                                    )
                                 }
                             })}
                         </React.Fragment>

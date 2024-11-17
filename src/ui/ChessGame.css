@@ -5,6 +5,8 @@
     justify-content: start;
     padding: 20px;
     gap: 20px;
+    flex: 3; /* Adjust the width ratio */
+    max-width: 70%; /* Optional max-width for the chess-game section */
 }
 
 .chess-board-container {
@@ -40,6 +42,7 @@
     padding: 10px;
     border-radius: 5px;
     background: #f9f9f9;
+    text-align: center;
 }
 
 .hand {
@@ -47,16 +50,22 @@
     overflow-x: auto;
     white-space: nowrap;
     gap: 5px;
+    flex: 1
 }
 
 .card {
-    width: 60px;
-    height: 100px;
+    width: 70px; /* Increase width slightly */
+    height: 110px; /* Increase height slightly */
     border: 1px solid #ddd;
     border-radius: 3px;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: transform 0.1s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden; /* Prevent overflow if content exceeds boundaries */
 }
 
 .card:hover {
@@ -71,10 +80,14 @@
 }
 
 .card-name {
-    font-size: 0.9em;
+    font-size: 0.8em; /* Adjust font size to fit */
     font-weight: bold;
     text-align: center;
-    margin-top: 5px;
+    margin: 5px 0; /* Add margin for spacing */
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden; /* Hide overflow if text is too long */
+    text-overflow: ellipsis; /* Add ellipsis for overflow text */
+    width: 90%; /* Ensure text stays within bounds */
 }
 
 .card-description {
@@ -82,7 +95,9 @@
     text-align: center;
     margin-top: 2px;
     color: #555;
+    padding: 2px 5px; /* Add padding for better spacing */
 }
+
 
 .deck-count, .discard-pile {
     text-align: center;
@@ -120,3 +135,65 @@ button:hover {
     background-color: #222;
     color: white;
 }
+
+.game-container {
+    display: flex; /* Enables horizontal layout */
+    align-items: flex-start; /* Align items at the top */
+    gap: 20px; /* Space between the chess game and the log */
+    padding: 10px; /* Optional padding around the container */
+}
+
+.chess-game {
+
+}
+
+.game-log {
+    flex: 1; /* Adjust the width ratio */
+    max-width: 30%; /* Optional max-width for the log section */
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: 10px;
+    max-height: 600px; /* Limit height and enable scrolling */
+    overflow-y: auto;
+}
+
+.card-in-use {
+    border: 1px solid #000;
+    padding: 10px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.card-in-use.white {
+    background-color: #f0f0f0;
+}
+
+.card-in-use.black {
+    background-color: #d0d0d0;
+}
+
+.card-in-use.empty {
+    font-style: italic;
+    color: #888;
+}
+
+.game-info-row {
+    display: flex;
+    align-items: center; /* Aligns items vertically in the row */
+    justify-content: space-between; /* Distributes space between components */
+    gap: 15px; /* Optional: Adds space between the components */
+    margin: 10px 0; /* Adds some spacing between rows */
+}
+
+.card-in-use {
+    flex: 1; /* Adjust size of the CardInUse */
+}
+
+.deck {
+    flex: 1; /* Adjust size of the Deck */
+}
+
+.discard-pile {
+    flex: 1; /* Adjust size of the DiscardPile */
+}
+

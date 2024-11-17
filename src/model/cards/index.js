@@ -1,3 +1,6 @@
-export { labotomy } from './labotomy'
 export { warCasualties } from './warCasualties'
-export { sheetOfIce } from './sheetOfIce'
+export { treachery } from './treachery'
+export { adultery } from './adultery'
+export { brotherhood } from './brotherhood'
+export { callToArms } from './callToArms'
+export { labotomy } from './labotomy'
