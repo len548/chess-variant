@@ -135,7 +135,7 @@ class Game {
         let selectedCards = deck.slice(0, count);
 
         // this is for debug, shouldn't be included in upstream
-        const card_to_debug = deck.find(card => card.id === "war_casualties")
+        const card_to_debug = deck.find(card => card.id === "labotomy")
         if (card_to_debug) selectedCards.push(card_to_debug);
 
         return selectedCards;
@@ -170,7 +170,7 @@ class Game {
     initDeck() {
         const deck = cardsData.cards.map(card => new Card(
             card.id,
-            card.name,
+            card.name.toUpperCase(),
             card.description,
             card.effect,
             card.points,

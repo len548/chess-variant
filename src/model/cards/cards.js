@@ -14,9 +14,9 @@ export const cardsData = {
       },
       {
         "id": "labotomy",
-        "name": "Lobotomy",
+        "name": "Labotomy",
         "description": "Remove two Random cards from your opponents hand. Cards are immediately discarded. Opponent cannot draw new cards until after next turn.",
-        "effect": null,
+        "effect": effects.labotomy,
         "points": 3,
         "uniqueness": false,
         "continuousEffect": false

@@ -32,10 +32,9 @@ function GamePanel({ gameInstance }) {
     const [blackKingInCheck, setBlackKingInCheck] = useState(false);
 
     const cancelPlayedCard = (card, isWhite) => {
-        console.log("Card hasn't been played yet. so will return.")
         const update = gameState.cancelTheCurrentCard(card, isWhite)
         if (update) {
-            addLog(` ${isWhite? "White" : "Black" }: ${update}`)
+            addLog(isWhite, update)
         }
         const gs = gameState.copyGame();
         setGameState(gs)
@@ -55,7 +54,7 @@ function GamePanel({ gameInstance }) {
     const handleCardPlay = (card, isWhite) => {
         if (isCardPlayed) {
             console.log("You can only play one card per turn.")
-            addLog(`${isWhite ? "White" : "Black"} cannot play ${card.name} because only one card can be played per turn.`)
+            addLog(isWhite` cannot play ${card.name} because only one card can be played per turn.`)
             return
         }
         console.log(card)
@@ -63,7 +62,7 @@ function GamePanel({ gameInstance }) {
         const newGM = gameState.copyGame();
         isWhite ? setWhiteCardInUse(newGM.whiteCardInUse) : setBlackCardInUse(newGM.whiteCardInUse);
         console.log(newGM.whiteCardInUse)
-        addLog(`${isWhite ? "White" : "Black"}: ${update}`);
+        addLog(isWhite, update);
         isWhite
             ? setWhiteHand([...newGM.getWhiteHand()])
             : setBlackHand([...newGM.getBlackHand()]);
@@ -87,7 +86,7 @@ function GamePanel({ gameInstance }) {
         const update = gameState.executeAction(playerTurnToMoveIsWhite)
         if (update) {
             gameState.postExecuteAction(playerTurnToMoveIsWhite)
-            addLog(update);
+            addLog(playerTurnToMoveIsWhite, update);
         }
         const newgm = gameState.copyGame()
         setIsCardPlayed(newgm.isCardAlreadyPlayedThisTurn)
@@ -108,8 +107,10 @@ function GamePanel({ gameInstance }) {
         setIsCardPlayed(false);
     };
 
-    const addLog = (message) => {
-        setGameLog((prevLog) => [...prevLog, message]);
+    const addLog = (isWhite, message) => {
+        const color = isWhite ? "White" : "Black"
+        const log = color.concat(": ").concat(message)
+        setGameLog((prevLog) => [...prevLog, log]);
     };
 
     return (
