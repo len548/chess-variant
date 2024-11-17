@@ -15,13 +15,15 @@ function ChessBoard(
         blackKingInCheck, 
         setBlackKingInCheck,
         setGameLog,
-
+        selectedItems,
+        setSelectedItems
     }
 ) {
     const [draggedPieceTargetId, setDraggedPieceTargetId] = useState("")
-    const [selectedItems, setSelectedItems] = useState([])
+
     const startDragging = (e) => {
-        setDraggedPieceTargetId(e.target.attrs.id)
+        const pieceId = e.target?.attrs?.id
+        if (pieceId) setDraggedPieceTargetId(pieceId)
     }
     
     const inferCoord = (x, y, chessBoard) => {
@@ -52,8 +54,9 @@ function ChessBoard(
     const endDragging = (e) => {
         const currentGame = gameState
         const currentBoard = currentGame.getBoard()
-        const finalPosition = inferCoord(e.target.x() + 90, e.target.y() + 90, currentBoard)
+        const finalPosition = inferCoord(e.target?.attrs?.x + 90, e.target?.attrs?.y + 90, currentBoard)
         const selectedId = draggedPieceTargetId
+        // console.log(`draggedPieceId: ${draggedPieceTargetId}`)
         movePiece(selectedId, finalPosition, currentGame)
     }
 
@@ -62,9 +65,8 @@ function ChessBoard(
         const newgm = gameState.copyGame()
         setGameState(newgm)
         setSelectedItems(newgm.selectedItems)
-        console.log("old", gameState.selectedItems)
-        console.log(newgm.selectedItems)
     }
+
 
     function movePiece(selectedID, finalPosition, currentGame) {
         //selectedID: wp1
@@ -154,7 +156,6 @@ function ChessBoard(
                                             x = {square.getCanvasCoord()[0]}
                                             y = {square.getCanvasCoord()[1]}
                                             onClick = { onClick }
-
                                         />
                                     )
                                 }

@@ -3,12 +3,14 @@ import ChessBoard from "./ChessBoard"
 import { useState } from 'react'
 import Game from '../model/chess/chess'
 import Hand from './Hand'
-import {Deck, DiscardPile} from './Deck'
+import Deck from './Deck'
+import DiscardPile from "./DiscardPile"
 import GameLog from "./GameLog.jsx";
 import './ChessGame.css'
+import CardInUse from "./CardInUse";
 
-function GamePanel({gameParam}) {
-    const [gameState, setGameState] = useState(gameParam || new Game());
+function GamePanel({ gameInstance }) {
+    const [gameState, setGameState] = useState(gameInstance || new Game());
 
     const [whiteDeck, setWhiteDeck] = useState(gameState.getWhiteDeck());
     const [blackDeck, setBlackDeck] = useState(gameState.getBlackDeck());
@@ -22,15 +24,18 @@ function GamePanel({gameParam}) {
     // const [whiteCardInUse, setWhiteCardInUse] = useState(null);
     const [gameLog, setGameLog] = useState([]);
     const [selectedItems, setSelectedItems] = useState(gameState.selectedItems);
+    const [whiteCardInUse,  setWhiteCardInUse] = useState(gameState.whiteCardInUse);
+    const [blackCardInUse, setBlackCardInUse] = useState(gameState.whiteCardInUse);
 
     const [playerTurnToMoveIsWhite, setPlayerTurnToMoveIsWhite] = useState(true);
     const [whiteKingInCheck, setWhiteKingInCheck] = useState(false);
     const [blackKingInCheck, setBlackKingInCheck] = useState(false);
 
     const cancelPlayedCard = (card, isWhite) => {
-        if (!isCardPlayed) {
-            console.log("Card hasn't been played yet. so will return.")
-            gameState.cancelTheCurrentCard(card, isWhite)
+        console.log("Card hasn't been played yet. so will return.")
+        const update = gameState.cancelTheCurrentCard(card, isWhite)
+        if (update) {
+            addLog(` ${isWhite? "White" : "Black" }: ${update}`)
         }
         const gs = gameState.copyGame();
         setGameState(gs)
@@ -42,7 +47,9 @@ function GamePanel({gameParam}) {
             setBlackHand(gs.getBlackHand())
             setBlackDiscardPile(gs.getBlackUsedCards())
         }
-        setIsCardPlayed(gs.canPlayCard)
+        setWhiteCardInUse(gs.whiteCardInUse)
+        setBlackCardInUse(gs.blackCardInUse)
+        setSelectedItems(gs.selectedItems)
     }
 
     const handleCardPlay = (card, isWhite) => {
@@ -51,16 +58,15 @@ function GamePanel({gameParam}) {
             addLog(`${isWhite ? "White" : "Black"} cannot play ${card.name} because only one card can be played per turn.`)
             return
         }
-
-        gameState.playCard(card, isWhite);
-        setGameState(gameState.copyGame());
-        addLog(`${isWhite ? "White" : "Black"} played ${card.name}`);
-        playerTurnToMoveIsWhite
-            ? setWhiteHand([...gameState.getWhiteHand()])
-            : setBlackHand([...gameState.getBlackHand()]);
-        playerTurnToMoveIsWhite
-            ? setWhiteDiscardPile(gameState.whiteUsedCards)
-            : setBlackDiscardPile(gameState.blackUsedCards);
+        console.log(card)
+        const update = gameState.playCard(card, isWhite);
+        const newGM = gameState.copyGame();
+        isWhite ? setWhiteCardInUse(newGM.whiteCardInUse) : setBlackCardInUse(newGM.whiteCardInUse);
+        console.log(newGM.whiteCardInUse)
+        addLog(`${isWhite ? "White" : "Black"}: ${update}`);
+        isWhite
+            ? setWhiteHand([...newGM.getWhiteHand()])
+            : setBlackHand([...newGM.getBlackHand()]);
     };
 
     // Function to draw a card from the deck
@@ -78,9 +84,15 @@ function GamePanel({gameParam}) {
 
     // to confirm the action of the card
     const executeAction = () => {
-        const update = gameState.executeAction()
-        setIsCardPlayed(true)
+        const update = gameState.executeAction(playerTurnToMoveIsWhite)
+        if (update) {
+            gameState.postExecuteAction(playerTurnToMoveIsWhite)
+            addLog(update);
+        }
         const newgm = gameState.copyGame()
+        setIsCardPlayed(newgm.isCardAlreadyPlayedThisTurn)
+        playerTurnToMoveIsWhite ? setWhiteCardInUse(newgm.whiteCardInUse) : setBlackCardInUse(newgm.blackCardInUse)
+        playerTurnToMoveIsWhite ? setWhiteDiscardPile(newgm.getWhiteUsedCards()) : setBlackDiscardPile(newgm.getBlackUsedCards())
         setGameState(newgm);
     }
 
@@ -88,7 +100,10 @@ function GamePanel({gameParam}) {
     const endTurn = () => {
         // TO-DO: Store the gameState in the database
         gameState.endTurn();
-        // setGameState({ ...gameState });
+        const newGM = gameState.copyGame();
+        setGameState(newGM)
+        playerTurnToMoveIsWhite ? setWhiteCardInUse(newGM.whiteCardInUse) : setBlackCardInUse(newGM.blackCardInUse)
+        setSelectedItems(newGM.selectedItems)
         setPlayerTurnToMoveIsWhite(!playerTurnToMoveIsWhite);
         setIsCardPlayed(false);
     };
@@ -103,8 +118,9 @@ function GamePanel({gameParam}) {
                 {!playerTurnToMoveIsWhite && (
                     <div className="game-info">
                         <Hand hand={blackHand} onCardClick={handleCardPlay} isWhite={false} />
+                        <CardInUse card={blackCardInUse} isWhite={false} onClick={cancelPlayedCard} />
                         <Deck count={blackDeck.length} />
-                        <DiscardPile topCard={blackDiscardPile[blackDiscardPile.length - 1]} isWhite={false} />
+                        {/*<DiscardPile topCard={blackDiscardPile[blackDiscardPile.length - 1]} isWhite={false} />*/}
                     </div>
                 )}
                 <div className="chess-board-container">
@@ -123,21 +139,23 @@ function GamePanel({gameParam}) {
                     <div className="button-container">
                         <button onClick={drawCard}>Draw Card</button>
                         <button onClick={endTurn}>End Turn</button>
-                        <button onClick={cancelPlayedCard}>Cancel Card</button>
+                        <button onClick={() => cancelPlayedCard (playerTurnToMoveIsWhite ? whiteCardInUse : blackCardInUse, playerTurnToMoveIsWhite)}>Cancel Card</button>
                         <button onClick={executeAction}>Confirm</button>
                     </div>
                 </div>
                 {playerTurnToMoveIsWhite && (
                     <div className="game-info">
                         <Hand hand={whiteHand} onCardClick={handleCardPlay} isWhite={true} />
+                        <CardInUse card={whiteCardInUse} isWhite={true} onClick={cancelPlayedCard}/>
                         <Deck count={whiteDeck.length} />
-                        <DiscardPile topCard={whiteDiscardPile[whiteDiscardPile.length - 1]} onClick={cancelPlayedCard} isWhite={true} />
+                        {/*<DiscardPile topCard={whiteDiscardPile[whiteDiscardPile.length - 1]} isWhite={true} />*/}
                     </div>
                 )}
             </div>
             <GameLog log={gameLog} />
         </div>
     );
+
 }
 
 export default GamePanel

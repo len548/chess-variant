@@ -1,7 +1,6 @@
 export const warCasualties = (gameState, isWhite) => {
     gameState.onClick = (e) => {
         const pieceId = e.target?.attrs?.id;
-        const piece = e.target?.attrs;
         if (!pieceId) {
             return "Select a piece";
         }
@@ -37,12 +36,8 @@ export const warCasualties = (gameState, isWhite) => {
         gameState.selectedItems.forEach((pieceId) => {
             gameState.removePiece(pieceId)
         })
-        gameState.selectedItems = []
-        gameState.discardCard('war_casualties')
-        gameState.canPlayCard = false;
+        // gameState.postExecuteAction(isWhite)
+        return `${isWhite ? "black" : "white"} pawns are removed`
     }
 
-
-    const card = isWhite ? gameState.whiteHand.find(card => card.id === 'war_casualties') : gameState.blackHand.find(card => card.id === 'war_casualties');
-    isWhite ? gameState.whiteUsedCards.push(card) : gameState.blackUsedCards.push(card);
 }

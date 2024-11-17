@@ -21,7 +21,7 @@ class Game {
         this.whiteUsedCards = [];
         this.blackUsedCards = [];
         this.continuousCards = [];
-        this.canPlayCard = true;
+        this.isCardAlreadyPlayedThisTurn = false;
         this.whiteCardInUse = null;
         this.blackCardInUse = null;
         this.isPieceMoved = false;
@@ -45,38 +45,38 @@ class Game {
         this.nQueens = 1
 
         this.selectedItems = []
-        this.executeAction = function() {
-            this.canPlayCard = false;
-        }
+        // each card has to verify if conditions to execute the card are all met or not.
+        this.executeAction = function(){}
         this.onClick = function() {}
-        this.cancelTheCurrentCard = function (card, isWhite) {
-            if (!this.canPlayCard) {
-                console.log("you have played already a card this turn")
-                return
-            }
+        this.cancelTheCurrentCard = function (isWhite) {
             this.selectedItems = []
+            const card = isWhite ? this.whiteCardInUse : this.blackCardInUse
+            if (!card) {
+                console.log("There is no card played!")
+                return "there is no card played!"
+            }
             if (isWhite) {
-                if (this.whiteUsedCards.length < 1) {
-                    console.log("There is no card played!")
-                    return
-                }
-                const usedCard = this.whiteUsedCards[this.whiteUsedCards.length - 1];
-                this.whiteUsedCards = this.whiteUsedCards.filter(c => c.id !== usedCard.id);
-                console.log(usedCard)
-                this.whiteHand.push(usedCard);
+                this.whiteHand.push(this.whiteCardInUse);
+                this.whiteCardInUse = null
             }
             else {
-                if (this.blackUsedCards.length < 1) {
-                    console.log("There is no card played!")
-                    return
-                }
-                const usedCard = this.blackUsedCards[this.blackUsedCards.length - 1];
-                this.blackUsedCards = this.blackUsedCards.filter(c => c.id !== usedCard.id);
-                console.log(`usedCard: ${usedCard} back to the black hand`)
-                this.blackHand.push(usedCard);
+                this.blackHand.push(this.blackCardInUse);
+                this.blackCardInUse = null
             }
+            this.onClick = function(){}
+            this.executeAction = function(){}
+            return `${card.name} returns to hand`
         }
 
+    }
+
+    postExecuteAction(isWhite) {
+        this.isCardAlreadyPlayedThisTurn = true;
+        this.onClick = function(){}
+        this.executeAction = function(){}
+        this.discardCard(isWhite ? this.whiteCardInUse : this.blackCardInUse, isWhite)
+        isWhite ? this.whiteCardInUse = null : this.blackCardInUse = null
+        console.log("after reset: ", this.whiteCardInUse)
     }
 
     changePieceColour(pieceId) {
@@ -150,12 +150,21 @@ class Game {
     getBlackUsedCards() { return this.blackUsedCards }
 
     playCard(card, isWhite) {
+        if (this.isCardAlreadyPlayedThisTurn) {
+            return `have already played a card this turn`
+        }
+        if (isWhite ? this.whiteCardInUse : this.blackCardInUse) {
+            return `there is still a card in play`
+        }
         const cardToPlay = isWhite ? this.whiteHand.find(c => c.id === card.id) : this.blackHand.find(c => c.id === card.id);
         if (cardToPlay){
             cardToPlay.effect(this, isWhite);
             isWhite ? this.whiteCardInUse = card : this.blackCardInUse = card;
-            this.discardCard(card.id, isWhite);
+            const ind = isWhite ? this.whiteHand.indexOf(cardToPlay) : this.blackHand.indexOf(cardToPlay);
+            isWhite ? this.whiteHand.splice(ind, 1) : this.blackHand.splice(ind, 1);
+            return `played ${cardToPlay.name}`
         }
+        return "card not found in hand"
     }
 
     initDeck() {
@@ -195,18 +204,30 @@ class Game {
         this.chess.put(newPiece, square);
     }
     
-    discardCard(cardId, isWhite) {
-        const card = isWhite ? this.whiteHand.find(card => card.id === cardId) : this.blackHand.find(card => card.id === cardId);
+    discardCard(card, isWhite) {
         if (card) {
-            isWhite ? this.whiteHand = this.whiteHand.filter(c => c.id !== cardId) : this.blackHand = this.blackHand.filter(c => c.id !== cardId);
             isWhite ? this.whiteUsedCards.push(card) : this.blackUsedCards.push(card);
+            return `${card.name} into the discard pile`
         }
     }
 
     endTurn() {
+        if (!this.isCardAlreadyPlayedThisTurn && !this.isPieceMoved) {
+            return "haven't played yet."
+        }
+        if (this.playerTurnToMoveIsWhite ? this.whiteCardInUse : this.blackCardInUse) {
+            this.cancelTheCurrentCard(this.playerTurnToMoveIsWhite ? this.whiteCardInUse : this.blackCardInUse, this.playerTurnToMoveIsWhite)
+        }
+        if (this.isCardAlreadyPlayedThisTurn && !this.isPieceMoved) {
+            const currentTurn = this.chess.turn();
+            // switch the opponent's turn in this.chess
+            this.chess.load(
+                this.chess.fen().replace(` ${currentTurn} `, currentTurn === 'w' ? ' b ' : ' w ')
+            );
+        }
         this.playerTurnToMoveIsWhite = !this.playerTurnToMoveIsWhite;
         this.selectedItems = []
-        this.canPlayCard = true;
+        this.isCardAlreadyPlayedThisTurn = false;
         this.isPieceMoved = false;
     }
 
@@ -336,7 +357,7 @@ class Game {
             return this.chess.turn() + check
         }
         this.isPieceMoved = true;
-        this.setBoard(currentBoard)
+        this.setBoard(currentBoard);
         return `${moveAttempt.color}${moveAttempt.piece} moved to ${moveAttempt.to} from ${moveAttempt.from}`
     }
 
@@ -484,7 +505,7 @@ class Game {
         newGame.whiteUsedCards = this.whiteUsedCards
         newGame.blackUsedCards = this.blackUsedCards
         newGame.continuousCards = this.continuousCards
-        newGame.canPlayCard = this.canPlayCard
+        newGame.isCardAlreadyPlayedThisTurn = this.isCardAlreadyPlayedThisTurn
         newGame.whiteKingInCheck = this.whiteKingInCheck
         newGame.blackKingInCheck = this.blackKingInCheck
         newGame.nQueens = this.nQueens
@@ -492,10 +513,11 @@ class Game {
         newGame.pieceCounters = this.pieceCounters
         newGame.selectedItems = this.selectedItems
         newGame.isPieceMoved = this.isPieceMoved
+        newGame.whiteCardInUse = this.whiteCardInUse
+        newGame.blackCardInUse = this.blackCardInUse
         newGame.executeAction = this.executeAction
         newGame.onClick = this.onClick
         newGame.cancelTheCurrentCard = this.cancelTheCurrentCard
-
         return newGame        
     }
 
