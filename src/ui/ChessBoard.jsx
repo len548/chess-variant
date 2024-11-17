@@ -14,11 +14,12 @@ function ChessBoard(
         setWhiteKingInCheck, 
         blackKingInCheck, 
         setBlackKingInCheck,
-        setGameLog
+        setGameLog,
+        selectedItems,
+        setSelectedItems
     }
 ) {
     const [draggedPieceTargetId, setDraggedPieceTargetId] = useState("")
-    const [selectedItems, setSelectedItems] = useState([]);
 
     const startDragging = (e) => {
         const pieceId = e.target?.attrs?.id
@@ -55,13 +56,15 @@ function ChessBoard(
         const currentBoard = currentGame.getBoard()
         const finalPosition = inferCoord(e.target?.attrs?.x + 90, e.target?.attrs?.y + 90, currentBoard)
         const selectedId = draggedPieceTargetId
+        // console.log(`draggedPieceId: ${draggedPieceTargetId}`)
         movePiece(selectedId, finalPosition, currentGame)
     }
 
     const onClick = (e) => {
         gameState.onClick(e)
-        setSelectedItems(gameState.selectedItems)
-        setGameState(gameState.copyGame())
+        const newgm = gameState.copyGame()
+        setGameState(newgm)
+        setSelectedItems(newgm.selectedItems)
     }
 
 
@@ -107,7 +110,6 @@ function ChessBoard(
         setGameState(currentGame)
 
         if (blackCheckmated) {
-            console.log("blackCheckMated")
             alert("WHITE WON BY CHECKMATE!")
         } else if (whiteCheckmated) {
             alert("BLACK WON BY CHECKMATE!")
@@ -143,8 +145,7 @@ function ChessBoard(
                                             playerTurnToMoveIsWhite = {playerTurnToMoveIsWhite}
                                             whiteKingInCheck = {whiteKingInCheck}
                                             blackKingInCheck = {blackKingInCheck}
-                                            gameState = {gameState}
-                                            selectedItems = {selectedItems}
+                                            isSelected = {selectedItems.includes(square.getPieceIdOnThisSquare())}
                                         />
                                     )
                                 } else {

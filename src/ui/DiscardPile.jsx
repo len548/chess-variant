@@ -1,7 +1,8 @@
-const DiscardPile = ({ topCard, onClick, isWhite }) => {
+import CardUI from "./Card";
+const DiscardPile = ({ topCard, isWhite }) => {
     return (
         <div className="discard-pile">
-            {topCard ? <CardUI card={topCard} onClick={onClick} isWhite={isWhite} /> : "No cards discarded yet"}
+            {topCard ? <CardUI card={topCard} isWhite={isWhite} /> : "No cards discarded yet"}
         </div>
     );
 };

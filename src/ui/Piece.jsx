@@ -13,10 +13,8 @@ const Piece = (props) => {
     const endDragging = (e) => {
         props.onDragEnd(e)
     }
-    let isSelected;
     const onClick = (e) => {
         props.onClick(e)
-        isSelected = props.selectedItems.includes(props.id);
     }
 
     return <Image image={image}
@@ -30,8 +28,10 @@ const Piece = (props) => {
          onDragStart = {props.onDragStart}
          onDragEnd = { (e) => endDragging(e) }
          onClick={ onClick }
-         fill = {(thisWhiteKingInCheck && "red") || (thisBlackKingInCheck && "red") || (isSelected && "green")}
+         fill = {(thisWhiteKingInCheck && "red") || (thisBlackKingInCheck && "red")}
          id = {props.id}
+         stroke={props.isSelected ? 'yellow' : 'transparent'} // Highlight selected piece
+         strokeWidth={props.isSelected ? 4 : 0}
          _useStrictMode = {true}
          />;
 };

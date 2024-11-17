@@ -7,20 +7,4 @@ const Deck = ({ count }) => {
     );
   };
 
-  const CurrentCard = ({ card }) => {
-    return (
-      <div className="called-card">
-        {card ? <CardUI card={card} onClick={() => {}} /> : "No card called yet"}
-      </div>
-    );
-  }
-
-  const DeadPile = ({ topCard }) => {
-    return (
-      <div className="dead-pile">
-        {topCard ? <CardUI card={topCard} onClick={() => {}} /> : "No cards discarded yet"}
-      </div>
-    );
-  };
-
 export default Deck;
