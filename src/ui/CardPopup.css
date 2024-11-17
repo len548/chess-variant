@@ -1,0 +1,31 @@
+.card-popup {
+    position: fixed; /* Positioned relative to the viewport */
+    z-index: 1000; /* Ensure it appears above other elements */
+    background: white; /* Clean background for readability */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 20px; /* Padding inside the component */
+    max-width: 400px; /* Set a fixed maximum width */
+    font-size: 1em; /* Base font size */
+    line-height: 1.5; /* Proper line spacing for readability */
+    word-wrap: break-word; /* Ensures long words break into lines */
+    overflow-wrap: break-word; /* Compatibility for older browsers */
+    white-space: normal; /* Ensures text wraps as needed */
+    overflow: hidden; /* Prevents text from spilling out */
+    box-sizing: border-box; /* Includes padding and border in size calculation */
+}
+
+.popup-title {
+    font-weight: bold;
+    font-size: 1.4em; /* Larger font for title */
+    margin-bottom: 10px; /* Add spacing below the title */
+    text-align: center;
+}
+
+.popup-description {
+    font-size: 1em; /* Base font size for description */
+    color: #555; /* Neutral text color */
+    line-height: 1.5; /* Proper line spacing */
+    margin: 0; /* No extra margins */
+}
