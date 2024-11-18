@@ -5,7 +5,6 @@ const CardPopup = ({ card, isVisible, position }) => {
     if (!isVisible) {
         return null;
     }
-    console.log(card.name)
     return (
         <div
             className="card-popup"
