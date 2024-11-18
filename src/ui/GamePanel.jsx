@@ -18,10 +18,7 @@ function GamePanel({ gameInstance }) {
     const [blackHand, setBlackHand] = useState(gameState.getBlackHand());
     const [whiteDiscardPile, setWhiteDiscardPile] = useState([]);
     const [blackDiscardPile, setBlackDiscardPile] = useState([]);
-    const [deadWhitePieces, setDeadWhitePieces] = useState([]);
-    const [deadBlackPieces, setDeadBlackPieces] = useState([]);
     const [isCardPlayed, setIsCardPlayed] = useState(false);
-    // const [whiteCardInUse, setWhiteCardInUse] = useState(null);
     const [gameLog, setGameLog] = useState([]);
     const [selectedItems, setSelectedItems] = useState(gameState.selectedItems);
     const [whiteCardInUse,  setWhiteCardInUse] = useState(gameState.whiteCardInUse);
@@ -41,13 +38,13 @@ function GamePanel({ gameInstance }) {
         if (isWhite) {
             setWhiteHand(gs.getWhiteHand())
             setWhiteDiscardPile(gs.getWhiteUsedCards())
+            setWhiteCardInUse(gs.whiteCardInUse)
         }
         else {
             setBlackHand(gs.getBlackHand())
             setBlackDiscardPile(gs.getBlackUsedCards())
+            setBlackCardInUse(gs.blackCardInUse)
         }
-        setWhiteCardInUse(gs.whiteCardInUse)
-        setBlackCardInUse(gs.blackCardInUse)
         setSelectedItems(gs.selectedItems)
     }
 
@@ -57,11 +54,12 @@ function GamePanel({ gameInstance }) {
             addLog(isWhite` cannot play ${card.name} because only one card can be played per turn.`)
             return
         }
-        console.log(card)
         const update = gameState.playCard(card, isWhite);
+        console.log(gameState.blackCardInUse)
+        console.log(isWhite)
         const newGM = gameState.copyGame();
-        isWhite ? setWhiteCardInUse(newGM.whiteCardInUse) : setBlackCardInUse(newGM.whiteCardInUse);
-        console.log(newGM.whiteCardInUse)
+        isWhite ? setWhiteCardInUse(newGM.whiteCardInUse) : setBlackCardInUse(newGM.blackCardInUse);
+        console.log(blackCardInUse)
         addLog(isWhite, update);
         isWhite
             ? setWhiteHand([...newGM.getWhiteHand()])
@@ -70,15 +68,16 @@ function GamePanel({ gameInstance }) {
 
     // Function to draw a card from the deck
     const drawCard = () => {
-        const card = gameState.drawCard(); // it has to pass the reference of the deck
-        if (!card) {
-            return
-        }
+        const update = gameState.drawCard(); // it has to pass the reference of the
+
         const newGame = gameState.copyGame()
         setGameState(newGame);
         playerTurnToMoveIsWhite
             ? setWhiteHand(newGame.getWhiteHand())
             : setBlackHand(newGame.getBlackHand());
+        playerTurnToMoveIsWhite
+            ? setWhiteDeck(newGame.getWhiteDeck())
+            : setBlackDeck(newGame.getBlackDeck())
     };
 
     // to confirm the action of the card
@@ -98,10 +97,16 @@ function GamePanel({ gameInstance }) {
 
     const endTurn = () => {
         // TO-DO: Store the gameState in the database
-        gameState.endTurn();
+        const update = gameState.endTurn();
+        if (update === "haven't played yet.") {
+            addLog(playerTurnToMoveIsWhite, update);
+            return
+        }
         const newGM = gameState.copyGame();
         setGameState(newGM)
+
         playerTurnToMoveIsWhite ? setWhiteCardInUse(newGM.whiteCardInUse) : setBlackCardInUse(newGM.blackCardInUse)
+        playerTurnToMoveIsWhite ? setWhiteHand(newGM.getWhiteHand()) : setBlackCardInUse(newGM.getBlackHand())
         setSelectedItems(newGM.selectedItems)
         setPlayerTurnToMoveIsWhite(!playerTurnToMoveIsWhite);
         setIsCardPlayed(false);

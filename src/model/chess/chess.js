@@ -48,19 +48,17 @@ class Game {
         // each card has to verify if conditions to execute the card are all met or not.
         this.executeAction = function(){}
         this.onClick = function() {}
-        this.cancelTheCurrentCard = function (isWhite) {
+        this.cancelTheCurrentCard = function (card, isWhite) {
             this.selectedItems = []
-            const card = isWhite ? this.whiteCardInUse : this.blackCardInUse
             if (!card) {
-                console.log("There is no card played!")
                 return "there is no card played!"
             }
             if (isWhite) {
-                this.whiteHand.push(this.whiteCardInUse);
+                this.whiteHand.push(card);
                 this.whiteCardInUse = null
             }
             else {
-                this.blackHand.push(this.blackCardInUse);
+                this.blackHand.push(card);
                 this.blackCardInUse = null
             }
             this.onClick = function(){}
@@ -76,7 +74,6 @@ class Game {
         this.executeAction = function(){}
         this.discardCard(isWhite ? this.whiteCardInUse : this.blackCardInUse, isWhite)
         isWhite ? this.whiteCardInUse = null : this.blackCardInUse = null
-        console.log("after reset: ", this.whiteCardInUse)
     }
 
     changePieceColour(pieceId) {
@@ -113,10 +110,11 @@ class Game {
         }
         const card = this.pickRandomCards(deck, 1)[0]
         this.playerTurnToMoveIsWhite ? this.whiteHand.push(card) : this.blackHand.push(card);
-        console.log(`the hand after drawing a card: ${this.playerTurnToMoveIsWhite ? this.whiteHand : this.blackHand }`)
+        return card
     }
     
 
+    /*return: array<Cards>[count]*/
     pickRandomCards(deck, count) {
         let currentIndex = deck.length, randomIndex;
         if (deck.length < count) {
@@ -137,9 +135,7 @@ class Game {
         // this is for debug, shouldn't be included in upstream
         const card_to_debug = deck.find(card => card.id === "labotomy")
         if (card_to_debug) selectedCards.push(card_to_debug);
-
         return selectedCards;
-
     }
 
     getWhiteHand() { return this.whiteHand }
@@ -215,9 +211,10 @@ class Game {
         if (!this.isCardAlreadyPlayedThisTurn && !this.isPieceMoved) {
             return "haven't played yet."
         }
-        if (this.playerTurnToMoveIsWhite ? this.whiteCardInUse : this.blackCardInUse) {
-            this.cancelTheCurrentCard(this.playerTurnToMoveIsWhite ? this.whiteCardInUse : this.blackCardInUse, this.playerTurnToMoveIsWhite)
-        }
+        const card = this.playerTurnToMoveIsWhite ? this.whiteCardInUse : this.blackCardInUse;
+        console.log(this.playerTurnToMoveIsWhite, card)
+        this.cancelTheCurrentCard(card, this.playerTurnToMoveIsWhite)
+
         if (this.isCardAlreadyPlayedThisTurn && !this.isPieceMoved) {
             const currentTurn = this.chess.turn();
             // switch the opponent's turn in this.chess
