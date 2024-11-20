@@ -6,7 +6,12 @@ This effect continues until the end of the game or is overridden by another card
 */
 
 export const brotherhood = (gameState, isWhite) => {
-    const hand = isWhite ? gameState.getWhiteHand() : gameState.getBlackHand()
-    const card = hand.find(item => item.id === "brotherhood")
-    if (card) gameState.continuousCards.push(card);
+    gameState.executeAction = () => {
+        const card = isWhite ? gameState.whiteCardInUse : gameState.blackCardInUse
+        if (!card || card.name !== "brotherhood") {
+            return "brotherhood card is not found."
+        }
+        gameState.addToContinuousCards(card)
+        return `${card.name} is on effect`
+    }
 }

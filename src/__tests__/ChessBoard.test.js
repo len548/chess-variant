@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ChessBoard from '../ui/ChessBoard';
+import ChessBoard from '../view/ChessBoard';
 import '@testing-library/jest-dom';
 import Game from '../model/chess/chess';
 
 // Mock subcomponents if needed
-jest.mock('../ui/Piece', () => ({ x, y, imgurls, onDragStart, onDragEnd, onClick }) => (
+jest.mock('../view/Piece', () => ({ x, y, imgurls, onDragStart, onDragEnd, onClick }) => (
     <div
         data-testid="piece"
         style={{ left: x, top: y }}
@@ -18,7 +18,7 @@ jest.mock('../ui/Piece', () => ({ x, y, imgurls, onDragStart, onDragEnd, onClick
     ></div>
 ));
 
-jest.mock('../ui/EmptySquare', () => ({ j, i, x, y, onClick }) => (
+jest.mock('../view/EmptySquare', () => ({ j, i, x, y, onClick }) => (
     <div data-testid="square" style={{ left: x, top: y }} onClick={onClick}></div>
 ));
 

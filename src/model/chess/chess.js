@@ -68,6 +68,26 @@ class Game {
 
     }
 
+    addToContinousCards(card) {
+        if (!card) {
+            return "card not found"
+        }
+        if (!card.contiuing_effect) {
+            return "not continuous effect"
+        }
+        if (card.name === "brotherhood" || card.name === "blockade") {
+            const searchingName = card.name === "brotherhood" ? "blockade" : "brotherhood"
+            const conflictedCard = this.continuousCards.find(item => item.id === searchingName)
+            if (conflictedCard) {
+                const ind = this.continuousCards.indexOf(conflictedCard)
+                this.continuousCards[ind] = card
+                return `${card.name} overwrites ${searchingName}`
+            }
+        }
+        this.continuousCards.push(card)
+        return `${card.name} is called! - ${card.description}`
+    }
+
     postExecuteAction(isWhite) {
         this.isCardAlreadyPlayedThisTurn = true;
         this.onClick = function(){}
@@ -133,7 +153,7 @@ class Game {
         let selectedCards = deck.slice(0, count);
 
         // this is for debug, shouldn't be included in upstream
-        const card_to_debug = deck.find(card => card.id === "labotomy")
+        const card_to_debug = deck.find(card => card.id === "blockade")
         if (card_to_debug) selectedCards.push(card_to_debug);
         return selectedCards;
     }
@@ -212,14 +232,13 @@ class Game {
             return "haven't played yet."
         }
         const card = this.playerTurnToMoveIsWhite ? this.whiteCardInUse : this.blackCardInUse;
-        console.log(this.playerTurnToMoveIsWhite, card)
         this.cancelTheCurrentCard(card, this.playerTurnToMoveIsWhite)
 
         if (this.isCardAlreadyPlayedThisTurn && !this.isPieceMoved) {
             const currentTurn = this.chess.turn();
             // switch the opponent's turn in this.chess
             this.chess.load(
-                this.chess.fen().replace(` ${currentTurn} `, currentTurn === 'w' ? ' b ' : ' w ')
+                this.chess.fen().replace(`${currentTurn}`, currentTurn === 'w' ? ' b ' : ' w ')
             );
         }
         this.playerTurnToMoveIsWhite = !this.playerTurnToMoveIsWhite;
@@ -278,9 +297,15 @@ class Game {
         }
         if (this.continuousCards.find(card => card.id === "brotherhood")) {
             if (moveAttempt.captured === moveAttempt.piece) {
-                const undo = this.chess.undo();
-                console.log("Brotherhood: capturing pieces of the same type is prohibited!")
-                return "Brotherhood: capturing pieces of the same type is prohibited!";
+                this.chess.undo();
+                return "BROTHERHOOD: capturing pieces of the same type is prohibited!";
+            }
+        }
+        else if (this.continuousCards.find(card => card.id === "blockade")) {
+            if (moveAttempt.captured && moveAttempt.captured !== moveAttempt.piece) {
+                console.log(moveAttempt)
+                this.chess.undo();
+                return "BLOCKADE: all pieces may only capture pieces of the same kind.";
             }
         }
 
@@ -349,9 +374,16 @@ class Game {
         const check = this.chess.inCheck() ? " is in check" : " is not in check"
         // console.log(this.chess.turn() + check)
         if (check === " is in check") {
+            let update = ''
+            const cardDelete = this.continuousCards.find(card => card.id === "blockade" || card.id === "brotherhood")
+            if (cardDelete) {
+                const ind = this.continuousCards.indexOf(cardDelete)
+                this.continuousCards.splice(ind, 1)
+                update += `\n${cardDelete.name} effect is canceled`
+            }
             this.isPieceMoved = true;
             this.setBoard(currentBoard)
-            return this.chess.turn() + check
+            return this.chess.turn() + check + update
         }
         this.isPieceMoved = true;
         this.setBoard(currentBoard);
