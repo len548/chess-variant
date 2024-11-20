@@ -1,15 +1,15 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import GamePanel from "../ui/GamePanel.jsx";
+import GamePanel from "../view/GamePanel.jsx";
 import '@testing-library/jest-dom';
 import Game from '../model/chess/chess';
 
-jest.mock('../ui/ChessBoard', () => () => <div>ChessBoard</div>);
-jest.mock('../ui/Hand', () => ({ hand, onCardClick, isWhite }) => (
+jest.mock('../view/ChessBoard', () => () => <div>ChessBoard</div>);
+jest.mock('../view/Hand', () => ({ hand, onCardClick, isWhite }) => (
     <div onClick={() => onCardClick(hand[0], isWhite)}>{isWhite ? 'White Hand' : 'Black Hand'}</div>
 ));
-jest.mock('../ui/Deck', () => ({ count }) => <div>Deck ({count})</div>);
-jest.mock('../ui/DiscardPile', () => ({ topCard, isWhite }) => (
+jest.mock('../view/Deck', () => ({ count }) => <div>Deck ({count})</div>);
+jest.mock('../view/DiscardPile', () => ({ topCard, isWhite }) => (
     <div>{isWhite ? 'White Discard Pile' : 'Black Discard Pile'}</div>
 ));
 

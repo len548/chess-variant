@@ -55,11 +55,8 @@ function GamePanel({ gameInstance }) {
             return
         }
         const update = gameState.playCard(card, isWhite);
-        console.log(gameState.blackCardInUse)
-        console.log(isWhite)
         const newGM = gameState.copyGame();
         isWhite ? setWhiteCardInUse(newGM.whiteCardInUse) : setBlackCardInUse(newGM.blackCardInUse);
-        console.log(blackCardInUse)
         addLog(isWhite, update);
         isWhite
             ? setWhiteHand([...newGM.getWhiteHand()])
@@ -105,8 +102,11 @@ function GamePanel({ gameInstance }) {
         const newGM = gameState.copyGame();
         setGameState(newGM)
 
+        console.log(newGM.blackCardInUse)
+        console.log(newGM.getBlackHand())
+
         playerTurnToMoveIsWhite ? setWhiteCardInUse(newGM.whiteCardInUse) : setBlackCardInUse(newGM.blackCardInUse)
-        playerTurnToMoveIsWhite ? setWhiteHand(newGM.getWhiteHand()) : setBlackCardInUse(newGM.getBlackHand())
+        playerTurnToMoveIsWhite ? setWhiteHand(newGM.getWhiteHand()) : setBlackHand(newGM.getBlackHand())
         setSelectedItems(newGM.selectedItems)
         setPlayerTurnToMoveIsWhite(!playerTurnToMoveIsWhite);
         setIsCardPlayed(false);

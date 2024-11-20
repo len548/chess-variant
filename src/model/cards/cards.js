@@ -457,7 +457,7 @@ export const cardsData = {
         "id": "blockade",
         "name": "BLOCKADE",
         "description": "All pieces may only capture pieces of the same kind. Continuing Effect until the King is placed in check.",
-        "effect": null,
+        "effect": effects.blockade,
         "points": 3,
         "uniqueness": true,
         "continuousEffect": true
@@ -465,11 +465,11 @@ export const cardsData = {
       {
         "id": "brotherhood",
         "name": "BROTHERHOOD",
-        "description": "No piece may capture the same type of piece as it's own type.",
+        "description": "No piece may capture the same type of piece as it's own type. Continuing Effect until the King is placed in check.",
         "effect": effects.brotherhood,
         "points": 2,
         "uniqueness": true,
-        "continuousEffect": false
+        "continuousEffect": true
       },
       {
         "id": "narrowminded",
