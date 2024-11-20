@@ -168,7 +168,7 @@ export const cardsData = {
       {
         "id": "test_of_faith",
         "name": "Test of Faith",
-        "description": "Choose one of your pawns. Flip a coin. Heads the pawn becomes a bishop, tails, the pawn is removed from play and considered dead.",
+        "description": "Choose one of your pawns. By 50% chance, the pawn becomes a bishop, otherwise, the pawn is removed from play and considered dead.",
         "effect": null,
         "points": 2,
         "uniqueness": false,
@@ -546,7 +546,7 @@ export const cardsData = {
       {
         "id": "leap-of-faith",
         "name": "LEAP OF FAITH",
-        "description": "Target piece makes a 2 square leap in any direction, regardless of any pices or baoard conditions that occupy ther first square.",
+        "description": "Target piece makes a 2 square leap in any direction, regardless of any pieces or board conditions that occupy their first square.",
         "effect": null,
         "points": 2,
         "uniqueness": false,

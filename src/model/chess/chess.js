@@ -279,7 +279,6 @@ class Game {
         if (this.continuousCards.find(card => card.id === "brotherhood")) {
             if (moveAttempt.captured === moveAttempt.piece) {
                 const undo = this.chess.undo();
-                console.log("Brotherhood: capturing pieces of the same type is prohibited!")
                 return "Brotherhood: capturing pieces of the same type is prohibited!";
             }
         }
