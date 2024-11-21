@@ -178,7 +178,7 @@ export const cardsData = {
         "id": "test_of_courage",
         "name": "Test of Courage",
         "description": "Choose one of your pawns. By 50 % chance, the pawn becomes a knight, otherwise, the pawn is removed from play",
-        "effect": null,
+        "effect": effects.testOfCourage,
         "points": 2,
         "uniqueness": false,
         "continuousEffect": false
