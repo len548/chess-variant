@@ -37,17 +37,13 @@ export const testOfCourage = (gameState, isWhite) => {
         const oldPieceId = gameState.selectedItems[0]
         const randomChance = Math.random();
         if (randomChance < 0.5) {
-            // transform into bishop
-            const newPieceIdPrefix = "" + oldPieceId[0] + "n"
-            const newPieceNumber = gameState.pieceCounters.get(newPieceIdPrefix) + 1
-            const newPieceId = "" + newPieceIdPrefix + newPieceNumber
-            gameState.pieceCounters.set(newPieceIdPrefix, newPieceNumber)
-            const position = gameState.findPiece(gameState.getBoard(), oldPieceId)
-            const oldPiece = gameState.getBoard()[position[1]][position[0]].getPiece()
-            const newPiece = new ChessPiece("knight", oldPiece.isAttacked, oldPiece.color, newPieceId)
-            gameState.removePiece(oldPieceId)
-            gameState.putPiece(newPiece, position)
-            return "Pawn turned into a knight!"
+            // transform into knight
+            try {
+                return gameState.transformPiece(oldPieceId, 'n')
+            }
+            catch (err) {
+                return err
+            }
         }
         else {
             // remove it from play

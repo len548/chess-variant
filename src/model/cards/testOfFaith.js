@@ -37,21 +37,17 @@ export const testOfFaith = (gameState, isWhite) => {
         const randomChance = Math.random();
         if (randomChance < 0.5) {
             // transform into bishop
-            const newPieceIdPrefix = "" + oldPieceId[0] + "b"
-            const newPieceNumber = gameState.pieceCounters.get(newPieceIdPrefix) + 1
-            const newPieceId = "" + newPieceIdPrefix + newPieceNumber
-            gameState.pieceCounters.set(newPieceIdPrefix, newPieceNumber)
-            const position = gameState.findPiece(gameState.getBoard(), oldPieceId)
-            const oldPiece = gameState.getBoard()[position[1]][position[0]].getPiece()
-            const newPiece = new ChessPiece("bishop", oldPiece.isAttacked, oldPiece.color, newPieceId)
-            gameState.removePiece(oldPieceId)
-            gameState.putPiece(newPiece, position)
-            return "Pawn turned into a bishop!"
+            try {
+                return gameState.transformPiece(oldPieceId, 'b')
+            }
+            catch (err) {
+                return err
+            }
         }
         else {
             // remove it from play
             gameState.removePiece(oldPieceId)
-            return "Pawn is removed!"
+            return "pawn is removed!"
         }
     }
 }
