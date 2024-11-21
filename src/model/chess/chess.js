@@ -153,7 +153,7 @@ class Game {
         let selectedCards = deck.slice(0, count);
 
         // this is for debug, shouldn't be included in upstream
-        const card_to_debug = deck.find(card => card.id === "test_of_courage")
+        const card_to_debug = deck.find(card => card.id === "test_of_faith")
         if (card_to_debug) selectedCards.push(card_to_debug);
         return selectedCards;
     }
@@ -203,8 +203,6 @@ class Game {
         const x = pieceCoordinates[0]
         const y = pieceCoordinates[1]
         const square = this.toAlphabet[x] + (8-y).toString();
-        console.log(y)
-        console.log(square)
         currentBoard[y][x].setPiece(null)
         this.chess.remove(square)
         return "piece removed"
@@ -222,6 +220,31 @@ class Game {
         const square = this.toAlphabet[x] + (8-y).toString();
         const newPiece = {type: piece.id[1], color: piece.id[0]};
         this.chess.put(newPiece, square);
+    }
+
+    transformPiece(oldPieceId, to) {
+        const pieceOptions = ['r', 'n', 'b', 'q', 'p']
+        const pieceNames = ["rook", "knight", "bishop", "queen", "pawn"]
+        if (!to in pieceOptions) {
+            throw "invalid piece transformed into"
+        }
+        if (!oldPieceId[1] in pieceOptions) {
+            throw "invalid piece id"
+        }
+        const position = this.findPiece(this.getBoard(), oldPieceId)
+        if (!position) {
+            throw "piece not found"
+        }
+        const newPieceIdPrefix = "" + oldPieceId[0] + to
+        const newPieceNumber = this.pieceCounters.get(newPieceIdPrefix) + 1
+        const newPieceId = "" + newPieceIdPrefix + newPieceNumber
+        this.pieceCounters.set(newPieceIdPrefix, newPieceNumber)
+        const oldPiece = this.getBoard()[position[1]][position[0]].getPiece()
+        const newPieceName = pieceNames[pieceOptions.indexOf(to)]
+        const newPiece = new ChessPiece(newPieceName, oldPiece.isAttacked, oldPiece.color, newPieceId)
+        this.removePiece(oldPieceId)
+        this.putPiece(newPiece, position)
+        return `${pieceNames[oldPieceId[1]]} turned into a ${newPieceName}`
     }
     
     discardCard(card, isWhite) {
