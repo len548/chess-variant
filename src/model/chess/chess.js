@@ -153,7 +153,7 @@ class Game {
         let selectedCards = deck.slice(0, count);
 
         // this is for debug, shouldn't be included in upstream
-        const card_to_debug = deck.find(card => card.id === "blockade")
+        const card_to_debug = deck.find(card => card.id === "test_of_faith")
         if (card_to_debug) selectedCards.push(card_to_debug);
         return selectedCards;
     }
@@ -199,11 +199,15 @@ class Game {
     removePiece(pieceID) {
         const currentBoard = this.getBoard()
         const pieceCoordinates = this.findPiece(currentBoard, pieceID)
+        if (!pieceCoordinates) return "piece not found"
         const x = pieceCoordinates[0]
         const y = pieceCoordinates[1]
-        const square = this.toAlphabet[y] + x.toString();
+        const square = this.toAlphabet[x] + (8-y).toString();
+        console.log(y)
+        console.log(square)
         currentBoard[y][x].setPiece(null)
         this.chess.remove(square)
+        return "piece removed"
     }
 
     /* piece: ChessPiece
@@ -492,11 +496,13 @@ class Game {
                     // top (black)
                     // console.log(backRank[i])
                     startingChessBoard[j][i].setPiece(new ChessPiece(backRank[i], false, "black", blackBackRankId[i]))
-                    startingChessBoard[j + 1][7 - i].setPiece(new ChessPiece("pawn", false, "black", "bp" + i))
+                    const pawnNum = i + 1
+                    startingChessBoard[j + 1][7 - i].setPiece(new ChessPiece("pawn", false, "black", "bp" + pawnNum))
 
                 } else {
                     // bottom (white)
-                    startingChessBoard[j - 1][i].setPiece(new ChessPiece("pawn", false, "white", "wp" + i))
+                    const pawnNum = i + 1
+                    startingChessBoard[j - 1][i].setPiece(new ChessPiece("pawn", false, "white", "wp" + pawnNum))
                     startingChessBoard[j][i].setPiece(new ChessPiece(backRank[i], false, "white", whiteBackRankId[i]))
                 }
             }

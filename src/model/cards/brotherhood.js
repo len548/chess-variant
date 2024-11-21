@@ -9,7 +9,7 @@ export const brotherhood = (gameState, isWhite) => {
     gameState.executeAction = () => {
         const card = isWhite ? gameState.whiteCardInUse : gameState.blackCardInUse
         if (!card || card.name !== "brotherhood") {
-            return "brotherhood card is not found."
+            throw "brotherhood card is not found."
         }
         gameState.addToContinuousCards(card)
         return `${card.name} is on effect`

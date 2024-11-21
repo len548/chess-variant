@@ -1,32 +1,14 @@
 /*
-ADULTERY – If an adjacent square next to your king is vacant, move your opponent’s queen into that square. 
-The queen changes sides and becomes your piece. Play this card on your turn instead of making a move.
-
-Implementation Flow:
-Play the card during your turn instead of making a normal move.
-Identify the adjacent squares next to your king (orthogonal and diagonal neighbors).
-Condition check:
-
-Ensure that at least one adjacent square is empty.
-Ensure your opponent’s queen is still on the board.
-Move your opponent’s queen into the vacant adjacent square.
-Change the queen’s ownership to your color (it is now your piece).
-Update the game state with the queen’s new position and ownership.
-Complete the turn.
-
-Dependencies:
-Identify and validate adjacent squares around the king to ensure at least one is vacant.
-Implement logic to transfer ownership of the queen from the opponent to the player.
-Update the board and game state to reflect the new queen placement and movement permissions.
-Handle edge cases:
-If there are no vacant adjacent squares, the card cannot be played.
-Ensure that placing the queen does not result in an immediate check on the opponent’s king (as per standard chess rules).
+ADULTERY – If an adjacent square next to your king is vacant,
+move your opponent’s queen into that square.
+The queen changes sides and becomes your piece.
+Play this card on your turn instead of making a move.
 */
 
 export const adultery = (gameState, isWhite) => {
     gameState.onClick = (e) => {
         if (gameState.isPieceMoved) {
-            console.log("Cannont play this card")
+            console.log("Cannot play this card")
             const card = isWhite ? gameState.whiteHand.find(card => card.id === 'adultery') : gameState.blackHand.find(card => card.id === 'adultery');
             gameState.cancelTheCurrentCard(card, isWhite);
             return

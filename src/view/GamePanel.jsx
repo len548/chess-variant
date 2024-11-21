@@ -79,16 +79,21 @@ function GamePanel({ gameInstance }) {
 
     // to confirm the action of the card
     const executeAction = () => {
-        const update = gameState.executeAction(playerTurnToMoveIsWhite)
-        if (update) {
-            gameState.postExecuteAction(playerTurnToMoveIsWhite)
-            addLog(playerTurnToMoveIsWhite, update);
+        try {
+            const update = gameState.executeAction(playerTurnToMoveIsWhite)
+            if (update) {
+                gameState.postExecuteAction(playerTurnToMoveIsWhite)
+                addLog(playerTurnToMoveIsWhite, update);
+            }
+            const newgm = gameState.copyGame()
+            setIsCardPlayed(newgm.isCardAlreadyPlayedThisTurn)
+            playerTurnToMoveIsWhite ? setWhiteCardInUse(newgm.whiteCardInUse) : setBlackCardInUse(newgm.blackCardInUse)
+            playerTurnToMoveIsWhite ? setWhiteDiscardPile(newgm.getWhiteUsedCards()) : setBlackDiscardPile(newgm.getBlackUsedCards())
+            setGameState(newgm);
         }
-        const newgm = gameState.copyGame()
-        setIsCardPlayed(newgm.isCardAlreadyPlayedThisTurn)
-        playerTurnToMoveIsWhite ? setWhiteCardInUse(newgm.whiteCardInUse) : setBlackCardInUse(newgm.blackCardInUse)
-        playerTurnToMoveIsWhite ? setWhiteDiscardPile(newgm.getWhiteUsedCards()) : setBlackDiscardPile(newgm.getBlackUsedCards())
-        setGameState(newgm);
+        catch (err) {
+            addLog(playerTurnToMoveIsWhite, err)
+        }
     }
 
 
