@@ -168,8 +168,8 @@ export const cardsData = {
       {
         "id": "test_of_faith",
         "name": "Test of Faith",
-        "description": "Choose one of your pawns. Flip a coin. Heads the pawn becomes a bishop, tails, the pawn is removed from play and considered dead.",
-        "effect": null,
+        "description": "Choose one of your pawns. By 50 % chance, the pawn becomes a bishop, otherwise, the pawn is removed from play",
+        "effect": effects.testOfFaith,
         "points": 2,
         "uniqueness": false,
         "continuousEffect": false
@@ -177,7 +177,7 @@ export const cardsData = {
       {
         "id": "test_of_courage",
         "name": "Test of Courage",
-        "description": "Same as above, only pertaining to a Knight.",
+        "description": "Choose one of your pawns. By 50 % chance, the pawn becomes a knight, otherwise, the pawn is removed from play",
         "effect": null,
         "points": 2,
         "uniqueness": false,
