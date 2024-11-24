@@ -56,21 +56,21 @@ const inferCoord = (x, y, chessBoard) => {
     /*
         Should give the closest estimate for new position. 
     */
-    var hashmap = {}
-    var shortestDistance = Infinity
-    for (var i = 0; i < 8; i++) {
-        for (var j = 0; j < 8; j++) {
-            const canvasCoord = chessBoard[i][j].getCanvasCoord()
-            // calculate distance
-            const delta_x = canvasCoord[0] - x 
-            const delta_y = canvasCoord[1] - y
-            const newDistance = Math.sqrt(delta_x**2 + delta_y**2)
-            hashmap[newDistance] = canvasCoord
-            if (newDistance < shortestDistance) {
-                shortestDistance = newDistance
-            }
-        }
-    }
+    // var hashmap = {}
+    // var shortestDistance = Infinity
+    // for (var i = 0; i < 8; i++) {
+    //     for (var j = 0; j < 8; j++) {
+    //         const canvasCoord = chessBoard[i][j].getCanvasCoord()
+    //         // calculate distance
+    //         const delta_x = canvasCoord[0] - x
+    //         const delta_y = canvasCoord[1] - y
+    //         const newDistance = Math.sqrt(delta_x**2 + delta_y**2)
+    //         hashmap[newDistance] = canvasCoord
+    //         if (newDistance < shortestDistance) {
+    //             shortestDistance = newDistance
+    //         }
+    //     }
+    // }
 
     const toIndex =  {
         105:0, 195:1, 285: 2, 375: 3, 465: 4, 555: 5, 645: 6, 735: 7

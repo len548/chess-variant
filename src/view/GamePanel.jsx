@@ -50,8 +50,7 @@ function GamePanel({ gameInstance }) {
 
     const handleCardPlay = (card, isWhite) => {
         if (isCardPlayed) {
-            console.log("You can only play one card per turn.")
-            addLog(isWhite` cannot play ${card.name} because only one card can be played per turn.`)
+            addLog(isWhite, `cannot play ${card.name} because only one card can be played per turn.`)
             return
         }
         const update = gameState.playCard(card, isWhite);
@@ -80,12 +79,14 @@ function GamePanel({ gameInstance }) {
     // to confirm the action of the card
     const executeAction = () => {
         try {
-            const update = gameState.executeAction(playerTurnToMoveIsWhite)
-            if (update) {
-                gameState.postExecuteAction(playerTurnToMoveIsWhite)
-                addLog(playerTurnToMoveIsWhite, update);
+            const newgm = gameState.executeAction(playerTurnToMoveIsWhite)
+            if (!newgm) return
+            if (newgm instanceof Game) {
+                if (newgm.message) {
+                    addLog(playerTurnToMoveIsWhite, newgm.message);
+                }
+                newgm.postExecuteAction(playerTurnToMoveIsWhite)
             }
-            const newgm = gameState.copyGame()
             setIsCardPlayed(newgm.isCardAlreadyPlayedThisTurn)
             playerTurnToMoveIsWhite ? setWhiteCardInUse(newgm.whiteCardInUse) : setBlackCardInUse(newgm.blackCardInUse)
             playerTurnToMoveIsWhite ? setWhiteDiscardPile(newgm.getWhiteUsedCards()) : setBlackDiscardPile(newgm.getBlackUsedCards())
@@ -106,15 +107,12 @@ function GamePanel({ gameInstance }) {
         }
         const newGM = gameState.copyGame();
         setGameState(newGM)
-
-        console.log(newGM.blackCardInUse)
-        console.log(newGM.getBlackHand())
-
         playerTurnToMoveIsWhite ? setWhiteCardInUse(newGM.whiteCardInUse) : setBlackCardInUse(newGM.blackCardInUse)
         playerTurnToMoveIsWhite ? setWhiteHand(newGM.getWhiteHand()) : setBlackHand(newGM.getBlackHand())
         setSelectedItems(newGM.selectedItems)
         setPlayerTurnToMoveIsWhite(!playerTurnToMoveIsWhite);
         setIsCardPlayed(false);
+        console.log(playerTurnToMoveIsWhite ? "white" : "black")
     };
 
     const addLog = (isWhite, message) => {
@@ -146,6 +144,7 @@ function GamePanel({ gameInstance }) {
                         setGameLog={setGameLog}
                         selectedItems={selectedItems}
                         setSelectedItems={setSelectedItems}
+                        addLog = {addLog}
                     />
                     <div className="button-container">
                         <button onClick={drawCard}>Draw Card</button>

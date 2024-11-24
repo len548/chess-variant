@@ -8,47 +8,47 @@ export const callToArms = (gameState, isWhite) => {
     // select 1 - 2 empty squares on 2nd rank
     gameState.onClick = (e) => {
         if (e.target.attrs.className !== "EmptySquare") {
-            console.log("You can only select Empty squares")
-            return
+            return "select empty squares"
         }
         const i = e.target.attrs.i;
         const j = e.target.attrs.j;
         if (!isValidSquare(i, isWhite)) {
-            console.log("You can only select Square on the 2nd Rank")
-            return
+            return "select squares on the 2nd Rank"
         }
-
+        console.log(gameState.selectedItems)
+        console.log([j, i])
         if (isIncluded(gameState.selectedItems, i, j)) {
             gameState.selectedItems = gameState.selectedItems.filter(square => !(square[0] === i && square[1] === j))
-            console.log("Selected square is removed!")
-            console.log(gameState.selectedItems)
+            return
         }
         else if (gameState.selectedItems.length >= 2) {
-            console.log(gameState.selectedItems);
-            console.log("You can only select up to 2 empty squares")
+            return
         }
         else {
-            gameState.selectedItems.push([i, j]);
-            console.log("selected empty square is added to the list: ", gameState.selectedItems)
+            gameState.selectedItems.push([j, i]);
+            return
         }
     }
 
-    gameState.executeAction = () => {
+    gameState.executeAction = (isWhite) => {
         if (gameState.selectedItems.length === 0) {
-            console.log("You must select at least one empty square on the 2nd Rank")
-            return
+            throw "select at least one empty square on the 2nd Rank"
         }
         if (gameState.selectedItems.length > 2) {
-            console.log("Too many squares selected")
+            throw "Too many squares selected"
         }
+        const initialPieceId = isWhite ? 'wp' : 'bp';
+        let newPieceIdNumber = gameState.pieceCounters.get(initialPieceId);
         gameState.selectedItems.forEach((square) => {
-            const initialPieceId = isWhite ? 'wp' : 'bp';
-            const newPieceIdNumber = gameState.pieceCounters.get(initialPieceId);
+            newPieceIdNumber += 1
             const newPieceId = initialPieceId.concat(newPieceIdNumber);
-            gameState.pieceCounters.set(initialPieceId, newPieceIdNumber+1);
             const newPiece = new ChessPiece("pawn", false, isWhite ? "white" : "black", newPieceId)
-            gameState.putPiece(newPiece, [square[1], square[0]])
+            gameState.putPiece(newPiece, square)
         })
+        gameState.pieceCounters.set(initialPieceId, newPieceIdNumber + gameState.selectedItems.length);
+        console.log(gameState.pieceCounters)
+        gameState.message = `${gameState.selectedItems.length} pawns are added`
+        return gameState
     }
 }
 

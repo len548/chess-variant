@@ -25,7 +25,7 @@ class Game {
         this.whiteCardInUse = null;
         this.blackCardInUse = null;
         this.isPieceMoved = false;
-
+        this.message = null;
         this.toAlphabet = {
             0:"a", 1:"b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g", 7: "h"
         }
@@ -63,12 +63,13 @@ class Game {
             }
             this.onClick = function(){}
             this.executeAction = function(){}
+            this.message = null
             return `${card.name} returns to hand`
         }
 
     }
 
-    addToContinousCards(card) {
+    addToContinuousCards(card) {
         if (!card) {
             return "card not found"
         }
@@ -90,6 +91,7 @@ class Game {
 
     postExecuteAction(isWhite) {
         this.isCardAlreadyPlayedThisTurn = true;
+        this.message = null
         this.onClick = function(){}
         this.executeAction = function(){}
         this.discardCard(isWhite ? this.whiteCardInUse : this.blackCardInUse, isWhite)
@@ -151,10 +153,8 @@ class Game {
                 deck[randomIndex], deck[currentIndex]];
         }
         let selectedCards = deck.slice(0, count);
+        deck.splice(0, count)
 
-        // this is for debug, shouldn't be included in upstream
-        const card_to_debug = deck.find(card => card.id === "test_of_faith")
-        if (card_to_debug) selectedCards.push(card_to_debug);
         return selectedCards;
     }
 
@@ -173,14 +173,19 @@ class Game {
             return `there is still a card in play`
         }
         const cardToPlay = isWhite ? this.whiteHand.find(c => c.id === card.id) : this.blackHand.find(c => c.id === card.id);
-        if (cardToPlay){
-            cardToPlay.effect(this, isWhite);
-            isWhite ? this.whiteCardInUse = card : this.blackCardInUse = card;
-            const ind = isWhite ? this.whiteHand.indexOf(cardToPlay) : this.blackHand.indexOf(cardToPlay);
-            isWhite ? this.whiteHand.splice(ind, 1) : this.blackHand.splice(ind, 1);
-            return `played ${cardToPlay.name}`
+        if (!cardToPlay){
+            return "card not found in hand"
         }
-        return "card not found in hand"
+        try {
+            cardToPlay.effect(this, isWhite);
+        }
+        catch (err) {
+            return err
+        }
+        isWhite ? this.whiteCardInUse = card : this.blackCardInUse = card;
+        const ind = isWhite ? this.whiteHand.indexOf(cardToPlay) : this.blackHand.indexOf(cardToPlay);
+        isWhite ? this.whiteHand.splice(ind, 1) : this.blackHand.splice(ind, 1);
+        return `played ${cardToPlay.name}`
     }
 
     initDeck() {
@@ -193,7 +198,8 @@ class Game {
             card.uniqueness,
             card.continuousEffect
         ));
-        return deck;
+        const filtered_deck = deck.filter(card => card.effect !== null)
+        return filtered_deck;
     }
 
     removePiece(pieceID) {
@@ -244,7 +250,7 @@ class Game {
         const newPiece = new ChessPiece(newPieceName, oldPiece.isAttacked, oldPiece.color, newPieceId)
         this.removePiece(oldPieceId)
         this.putPiece(newPiece, position)
-        return `${pieceNames[oldPieceId[1]]} turned into a ${newPieceName}`
+        return `${pieceNames[pieceOptions.indexOf(oldPieceId[1])]} turned into a ${newPieceName}`
     }
     
     discardCard(card, isWhite) {
@@ -261,19 +267,27 @@ class Game {
         const card = this.playerTurnToMoveIsWhite ? this.whiteCardInUse : this.blackCardInUse;
         this.cancelTheCurrentCard(card, this.playerTurnToMoveIsWhite)
 
-        if (this.isCardAlreadyPlayedThisTurn && !this.isPieceMoved) {
-            const currentTurn = this.chess.turn();
+        const currentTurn = this.chess.turn();
+        const nextTurn = this.playerTurnToMoveIsWhite ? 'b' : 'w'
+        // this is necessary in case a player plays only card but do not make a move because this.chess doesn't update turn without moving a piece
+        if (currentTurn !== nextTurn) {
             // switch the opponent's turn in this.chess
-            this.chess.load(
-                this.chess.fen().replace(`${currentTurn}`, currentTurn === 'w' ? ' b ' : ' w ')
-            );
+            const fenParts = this.chess.fen().split(' ');
+            fenParts[1] = nextTurn;
+            const updatedFEN = fenParts.join(' ');
+            this.chess.load(updatedFEN);
         }
+
         this.playerTurnToMoveIsWhite = !this.playerTurnToMoveIsWhite;
         this.selectedItems = []
         this.isCardAlreadyPlayedThisTurn = false;
         this.isPieceMoved = false;
     }
-
+    setIsPieceMoved(bool){
+        if (typeof bool !== "boolean") return false;
+        this.isPieceMoved = bool
+        return true
+    }
     movePiece(pieceID, to){
         if (this.isPieceMoved) {
             return "piece cannot be moved this turn anymore"
@@ -320,19 +334,19 @@ class Game {
         try{
             moveAttempt = this.chess.move(move)
         } catch (error) {
-            return "invalid move"
+            return error
         }
         if (this.continuousCards.find(card => card.id === "brotherhood")) {
             if (moveAttempt.captured === moveAttempt.piece) {
                 this.chess.undo();
-                return "BROTHERHOOD: capturing pieces of the same type is prohibited!";
+                return "BROTHERHOOD - capturing pieces of the same type is prohibited!";
             }
         }
         else if (this.continuousCards.find(card => card.id === "blockade")) {
             if (moveAttempt.captured && moveAttempt.captured !== moveAttempt.piece) {
                 console.log(moveAttempt)
                 this.chess.undo();
-                return "BLOCKADE: all pieces may only capture pieces of the same kind.";
+                return "BLOCKADE - all pieces may only capture pieces of the same kind.";
             }
         }
 
@@ -573,6 +587,7 @@ class Game {
         newGame.isPieceMoved = this.isPieceMoved
         newGame.whiteCardInUse = this.whiteCardInUse
         newGame.blackCardInUse = this.blackCardInUse
+        newGame.message = this.message
         newGame.executeAction = this.executeAction
         newGame.onClick = this.onClick
         newGame.cancelTheCurrentCard = this.cancelTheCurrentCard

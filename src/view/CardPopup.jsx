@@ -9,7 +9,7 @@ const CardPopup = ({ card, isVisible, position }) => {
         <div
             className="card-popup"
             style={{
-                top: position.y,
+                top: position.y -50,
                 left: position.x,
             }}
         >

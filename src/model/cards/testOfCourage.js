@@ -39,16 +39,18 @@ export const testOfCourage = (gameState, isWhite) => {
         if (randomChance < 0.5) {
             // transform into knight
             try {
-                return gameState.transformPiece(oldPieceId, 'n')
+                gameState.message = gameState.transformPiece(oldPieceId, 'n')
+                return gameState
             }
             catch (err) {
-                return err
+                throw err
             }
         }
         else {
             // remove it from play
             gameState.removePiece(oldPieceId)
-            return "Pawn is removed!"
+            gameState.message = "Pawn is removed!"
+            return gameState
         }
     }
 }

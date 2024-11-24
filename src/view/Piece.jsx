@@ -17,21 +17,29 @@ const Piece = (props) => {
     }
 
     return <Image image={image}
-         className = {"Piece"}
-         x = {props.x - 90}
-         y = {props.y - 90}
-         draggable = {(props.isWhite && props.playerTurnToMoveIsWhite) || (!props.isWhite && !props.playerTurnToMoveIsWhite)}
-        //  draggable = {canThisPieceEvenBeMovedByThisPlayer && isItThatPlayersTurn}
-         width = {isDragged ? 75 : 60}
-         height = {isDragged ? 75 : 60}
-         onDragStart = {props.onDragStart}
-         onDragEnd = { (e) => endDragging(e) }
-         onClick={ onClick }
-         fill = {(thisWhiteKingInCheck && "red") || (thisBlackKingInCheck && "red")}
-         id = {props.id}
-         stroke={props.isSelected ? 'yellow' : 'transparent'} // Highlight selected piece
-         strokeWidth={props.isSelected ? 4 : 0}
-         _useStrictMode = {true}
+             className = {"Piece"}
+             x = {props.x - 90}
+             y = {props.y - 90}
+             draggable = {(props.isWhite && props.playerTurnToMoveIsWhite) || (!props.isWhite && !props.playerTurnToMoveIsWhite)}
+            //  draggable = {canThisPieceEvenBeMovedByThisPlayer && isItThatPlayersTurn}
+             width = {isDragged ? 75 : 60}
+             height = {isDragged ? 75 : 60}
+             onDragStart = {props.onDragStart}
+             onDragEnd = { (e) => endDragging(e) }
+             onClick={ onClick }
+              onMouseEnter={(e) => {
+                  const container = e.target.getStage().container();
+                  container.style.cursor = 'pointer';
+              }}
+              onMouseLeave={(e) => {
+                  const container = e.target.getStage().container();
+                  container.style.cursor = 'default';
+              }}
+             fill = {(thisWhiteKingInCheck && "red") || (thisBlackKingInCheck && "red")}
+             id = {props.id}
+             stroke={props.isSelected ? 'yellow' : 'transparent'} // Highlight selected piece
+             strokeWidth={props.isSelected ? 4 : 0}
+             _useStrictMode = {true}
          />;
 };
 

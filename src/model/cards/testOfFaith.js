@@ -38,16 +38,18 @@ export const testOfFaith = (gameState, isWhite) => {
         if (randomChance < 0.5) {
             // transform into bishop
             try {
-                return gameState.transformPiece(oldPieceId, 'b')
+                gameState.message = gameState.transformPiece(oldPieceId, 'b')
+                return gameState
             }
             catch (err) {
-                return err
+                throw err
             }
         }
         else {
             // remove it from play
             gameState.removePiece(oldPieceId)
-            return "pawn is removed!"
+            gameState.message = "pawn is removed!"
+            return gameState
         }
     }
 }
