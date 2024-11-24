@@ -69,7 +69,7 @@ export const cardsData = {
       {
         "id": "treachery",
         "name": "Treachery",
-        "description": "Remove any non-King piece and replace it with a piece of the opposing color. It is now yours.",
+        "description": "You can play this card instead of making a move. Replace any non-King piece with the piece of the opposing color. It is now yours.",
         "effect": effects.treachery,
         "points": 8,
         "uniqueness": false,

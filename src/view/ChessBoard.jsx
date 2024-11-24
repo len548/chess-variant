@@ -16,7 +16,8 @@ function ChessBoard(
         setBlackKingInCheck,
         setGameLog,
         selectedItems,
-        setSelectedItems
+        setSelectedItems,
+        addLog
     }
 ) {
     const [draggedPieceTargetId, setDraggedPieceTargetId] = useState("")
@@ -61,7 +62,10 @@ function ChessBoard(
     }
 
     const onClick = (e) => {
-        gameState.onClick(e)
+        const message = gameState.onClick(e)
+        if (message) {
+            addLog(playerTurnToMoveIsWhite,  message)
+        }
         const newgm = gameState.copyGame()
         setGameState(newgm)
         setSelectedItems(newgm.selectedItems)
@@ -76,14 +80,12 @@ function ChessBoard(
         var blackKingInCheck = false
         var blackCheckmated = false 
         var whiteCheckmated = false
-        const exceptions = ["invalid move", "moved in the same position.", "user tried to capture their own piece", "piece cannot be moved this turn anymore"]
+        const exceptions = ["BROTHERHOOD - capturing pieces of the same type is prohibited!", "BLOCKADE - all pieces may only capture pieces of the same kind.", "piece cannot be moved this turn anymore"]
         const update = currentGame.movePiece(selectedID, finalPosition, playerTurnToMoveIsWhite)
+        console.log(update)
         if (exceptions.includes(update)) {
             setDraggedPieceTargetId("")
-            setGameLog((prevLog) => [
-                ...prevLog,
-                `${playerTurnToMoveIsWhite ? "White" : "Black"}: ${update}`
-            ]);
+            addLog(playerTurnToMoveIsWhite, update)
             return
         } else if (update === "b is in check" || update === "w is in check") { 
             // change the fill of the enemy king or your king based on which side is in check. 
@@ -100,10 +102,7 @@ function ChessBoard(
                 whiteCheckmated = true
             }
         }
-        setGameLog((prevLog) => [
-            ...prevLog,
-            `${playerTurnToMoveIsWhite ? "White" : "Black"}: ${update}`
-        ]);
+
         setDraggedPieceTargetId("")
         setWhiteKingInCheck(whiteKingInCheck)
         setBlackKingInCheck(blackKingInCheck)
@@ -156,6 +155,7 @@ function ChessBoard(
                                             x = {square.getCanvasCoord()[0]}
                                             y = {square.getCanvasCoord()[1]}
                                             onClick = { onClick }
+                                            isSelected = {selectedItems.find(s => typeof s === 'object' && s[0] === square.getCoord()[0] && s[1] === square.getCoord()[1]) !== undefined}
                                         />
                                     )
                                 }
@@ -165,9 +165,6 @@ function ChessBoard(
                 })}
                 </Layer>
             </Stage>
-            <div className='SideBar'>
-                <p>Current Turn: {playerTurnToMoveIsWhite ? "White" : "Black"}</p>
-            </div>
         </div>
 
     )

@@ -6,8 +6,7 @@ export const labotomy = (gameState, isWhite) => {
 
         // Check if there are any cards in the hand
         if (targetHand.length === 0) {
-            console.log("Opponent's hand is empty. No cards to remove.");
-            return "no cards to remove.";
+            throw "no cards to remove.";
         }
 
         // Determine how many cards to remove (1 or 2 based on availability)
@@ -31,7 +30,7 @@ export const labotomy = (gameState, isWhite) => {
         });
         const color = isWhite ? "Black" : "White"
         // Log the removed cards for debugging
-        console.log(`removed cards: ${cardsToRemove.map(card => card.name).join(", ")} from the ${color}`);
-        return `removed cards: ${cardsToRemove.map(card => card.name).join(", ")}`;
+        gameState.message = `removed cards: ${cardsToRemove.map(card => card.name).join(", ")}`;
+        return gameState
     };
 }

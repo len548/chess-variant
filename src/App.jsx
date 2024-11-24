@@ -5,7 +5,7 @@ import Menu from "./view/Menu"
 function App() {
   return (
     <div className='App'>
-      <Menu />
+      {/*<Menu />*/}
       <GamePanel />
     </div>
   )
