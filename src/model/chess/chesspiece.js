@@ -25,32 +25,12 @@ class ChessPiece {
         const isNewSquareDifferent = this.squareThisPieceIsOn.x != newSquare.x || this.squareThisPieceIsOn.y != newSquare.y
 
         if (isNewSquareDifferent) {
-            console.log("set")
             this.squareThisPieceIsOn = newSquare
-            // newSquare.setPiece(this)
         }
-        console.log(this)
     }
 
     getSquare() {
         return this.squareThisPieceIsOn
-    }
-
-    toJson() {
-        return {
-            name: this.name,
-            isAttacked: this.isAttacked,
-            color: this.color,
-            id: this.id,
-            squareThisPieceIsOn: this.squareThisPieceIsOn ? `${this.getSquare().xx},${this.getSquare().y}` : null
-        }
-    }
-
-    static fromJson(json) {
-        const piece = new ChessPiece(json.name, json.isAttacked, json.color, json.id);
-        piece.squareThisPieceIsOn = json.squareThisPieceIsOn ? Square.fromJSON(json.squareThisPieceIsOn) : null;
-        piece.squareCoord = json.squareThisPieceIsOn
-        return piece;
     }
 }
 
