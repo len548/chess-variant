@@ -54,21 +54,6 @@ class Square {
     getCanvasCoord() {
         return this.canvasCoord
     }
-
-    toJson() {
-        return {
-            // Include all properties except the circular reference
-            x: this.x,
-            y: this.y,
-            canvasCoord: this.canvasCoord,
-            pieceIdOnThisSquare: null // Use an ID or null
-        };
-    }
-
-    static fromJSON(json) {
-        return new Square(json.x, json.y, null, json.canvasCoord);
-    }
-
 }
 
 export default Square
