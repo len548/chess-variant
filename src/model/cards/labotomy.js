@@ -1,5 +1,5 @@
 export const labotomy = (gameState, isWhite) => {
-    gameState.executeAction = function (isWhite) {
+    gameState.activateCard = function (isWhite) {
         // Determine which hand and used pile to target
         const targetHand = isWhite ? gameState.blackHand : gameState.whiteHand;
         const targetUsedPile = isWhite ? gameState.blackUsedCards : gameState.whiteUsedCards;

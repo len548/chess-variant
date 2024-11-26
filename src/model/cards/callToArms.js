@@ -30,7 +30,7 @@ export const callToArms = (gameState, isWhite) => {
         }
     }
 
-    gameState.executeAction = (isWhite) => {
+    gameState.activateCard = (isWhite) => {
         if (gameState.selectedItems.length === 0) {
             throw "select at least one empty square on the 2nd Rank"
         }

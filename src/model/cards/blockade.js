@@ -6,8 +6,8 @@ all pieces can only capture pieces of the same type
 This effect continues until the King is placed in check.
 */
 export const blockade = (gameState, isWhite) => {
-    gameState.executeAction = () => {
-        const blockadeCard = isWhite ? gameState.whiteCardInUse : gameState.blackCardInUse
+    gameState.activateCard = () => {
+        const blockadeCard = isWhite ? gameState.whiteSelectedCard : gameState.blackSelectedCard
         if (!blockadeCard || blockadeCard.id !== "blockade") {
             return "blockade card is not found."
         }

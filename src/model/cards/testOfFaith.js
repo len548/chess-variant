@@ -1,6 +1,6 @@
 /*
 TEST OF FAITH – Choose one of your pawns. By 50% chance, the pawn transforms into a bishop of your color.
-If tails, the pawn is removed from play and considered dead.
+Otherwise, the pawn is removed from play.
 */
 
 import ChessPiece from "../chess/chesspiece.js";
@@ -29,7 +29,7 @@ export const testOfFaith = (gameState, isWhite) => {
         }
     }
 
-    gameState.executeAction = (isWhite) => {
+    gameState.activateCard = (isWhite) => {
         if (gameState.selectedItems.length <= 0) {
             throw "select a pawn of your color"
         }

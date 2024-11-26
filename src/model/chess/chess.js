@@ -22,10 +22,11 @@ class Game {
         this.blackUsedCards = [];
         this.continuousCards = [];
         this.isCardAlreadyPlayedThisTurn = false;
-        this.whiteCardInUse = null;
-        this.blackCardInUse = null;
+        this.whiteSelectedCard = null;
+        this.blackSelectedCard = null;
         this.isPieceMoved = false;
         this.message = null;
+        this.completed_turn = 1;
         this.toAlphabet = {
             0:"a", 1:"b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g", 7: "h"
         }
@@ -42,29 +43,27 @@ class Game {
             8:0, 7:1, 6: 2, 5: 3, 4: 4, 3: 5, 2: 6, 1: 7
         }
 
-        this.nQueens = 1
-
         this.selectedItems = []
         // each card has to verify if conditions to execute the card are all met or not.
-        this.executeAction = function(){}
+        this.activateCard = function(){}
         this.onClick = function() {}
-        this.cancelTheCurrentCard = function (card, isWhite) {
+        this.cancelSelectedCard = function (card, isWhite) {
             this.selectedItems = []
             if (!card) {
                 return "there is no card played!"
             }
             if (isWhite) {
                 this.whiteHand.push(card);
-                this.whiteCardInUse = null
+                this.whiteSelectedCard = null
             }
             else {
                 this.blackHand.push(card);
-                this.blackCardInUse = null
+                this.blackSelectedCard = null
             }
             this.onClick = function(){}
-            this.executeAction = function(){}
+            this.activateCard = function(){}
             this.message = null
-            return `${card.name} returns to hand`
+            return `${card.name} is cancelled and returned to hand`
         }
 
     }
@@ -89,13 +88,13 @@ class Game {
         return `${card.name} is called! - ${card.description}`
     }
 
-    postExecuteAction(isWhite) {
+    postCardActivation(isWhite) {
         this.isCardAlreadyPlayedThisTurn = true;
         this.message = null
         this.onClick = function(){}
-        this.executeAction = function(){}
-        this.discardCard(isWhite ? this.whiteCardInUse : this.blackCardInUse, isWhite)
-        isWhite ? this.whiteCardInUse = null : this.blackCardInUse = null
+        this.activateCard = function(){}
+        this.discardCard(isWhite ? this.whiteSelectedCard : this.blackSelectedCard, isWhite)
+        isWhite ? this.whiteSelectedCard = null : this.blackSelectedCard = null
     }
 
     changePieceColour(pieceId) {
@@ -115,26 +114,22 @@ class Game {
        }
     }
 
-    
-    // return drawn card
     drawCard() {
         const deck = this.playerTurnToMoveIsWhite ? this.whiteDeck : this.blackDeck;
+        const hand = this.playerTurnToMoveIsWhite ? this.whiteHand : this.blackHand;
+        const selectedCard = this.playerTurnToMoveIsWhite ? this.whiteSelectedCard : this.blackSelectedCard
+        console.log(hand)
+        console.log(selectedCard)
         if (deck.length === 0) {
-            console.log("Deck is empty.")
-            return null;
+            return "deck is empty";
         }
-        if (this.playerTurnToMoveIsWhite && this.whiteHand.length >= 5) {
-            console.log("You (white) can only have 5 cards in your hand.")
-            return null;
-        } else if (!this.playerTurnToMoveIsWhite && this.blackHand.length >= 5) {
-            console.log("You (black) can only have 5 cards in your hand.")
-            return null;
+        if (hand.length >= 5 || (hand.length >= 4 && selectedCard !== null)) {
+            return "the hand is full";
         }
         const card = this.pickRandomCards(deck, 1)[0]
         this.playerTurnToMoveIsWhite ? this.whiteHand.push(card) : this.blackHand.push(card);
-        return card
+        return
     }
-    
 
     /*return: array<Cards>[count]*/
     pickRandomCards(deck, count) {
@@ -165,12 +160,12 @@ class Game {
     getWhiteUsedCards() { return this.whiteUsedCards }
     getBlackUsedCards() { return this.blackUsedCards }
 
-    playCard(card, isWhite) {
+    selectCard(card, isWhite) {
         if (this.isCardAlreadyPlayedThisTurn) {
-            return `have already played a card this turn`
+            return `have already played another card this turn`
         }
-        if (isWhite ? this.whiteCardInUse : this.blackCardInUse) {
-            return `there is still a card in play`
+        if (isWhite ? this.whiteSelectedCard : this.blackSelectedCard) {
+            return `a different card is already chosen`
         }
         const cardToPlay = isWhite ? this.whiteHand.find(c => c.id === card.id) : this.blackHand.find(c => c.id === card.id);
         if (!cardToPlay){
@@ -182,10 +177,10 @@ class Game {
         catch (err) {
             return err
         }
-        isWhite ? this.whiteCardInUse = card : this.blackCardInUse = card;
+        isWhite ? this.whiteSelectedCard = card : this.blackSelectedCard = card;
         const ind = isWhite ? this.whiteHand.indexOf(cardToPlay) : this.blackHand.indexOf(cardToPlay);
         isWhite ? this.whiteHand.splice(ind, 1) : this.blackHand.splice(ind, 1);
-        return `played ${cardToPlay.name}`
+        return `chose ${cardToPlay.name}`
     }
 
     initDeck() {
@@ -264,11 +259,14 @@ class Game {
         if (!this.isCardAlreadyPlayedThisTurn && !this.isPieceMoved) {
             return "haven't played yet."
         }
-        const card = this.playerTurnToMoveIsWhite ? this.whiteCardInUse : this.blackCardInUse;
-        this.cancelTheCurrentCard(card, this.playerTurnToMoveIsWhite)
+        const card = this.playerTurnToMoveIsWhite ? this.whiteSelectedCard : this.blackSelectedCard;
+        this.cancelSelectedCard(card, this.playerTurnToMoveIsWhite)
 
         const currentTurn = this.chess.turn();
         const nextTurn = this.playerTurnToMoveIsWhite ? 'b' : 'w'
+        if (nextTurn === 'w') {
+            this.completed_turn++
+        }
         // this is necessary in case a player plays only card but do not make a move because this.chess doesn't update turn without moving a piece
         if (currentTurn !== nextTurn) {
             // switch the opponent's turn in this.chess
@@ -318,7 +316,7 @@ class Game {
             return "moved in the same position."
         }
 
-        const isPromotion = this.isPawnPromotion(to, pieceID[1])
+        const isPromotion = this.isPawnPromotion(to, pieceID)
         const move = !isPromotion ? {
             from: this.toChessMove([x,y]),
             to: this.toChessMove([to_x, to_y]),
@@ -380,12 +378,15 @@ class Game {
             currentBoard[castle.y][castle.x].setPiece(null)
         }
         
-        const reassign = isPromotion ? currentBoard[to_y][to_x].setPiece(
-            new ChessPiece(
-                'queen', 
-                false, 
-                pieceID[0] === 'w' ? 'white' : 'black', 
-                pieceID[0] === 'w' ? 'wq' + this.nQueens : 'bq' + this.nQueens))
+        const reassign = isPromotion
+            ? currentBoard[to_y][to_x].setPiece(
+                new ChessPiece(
+                    'queen',
+                    false,
+                    pieceID[0] === 'w' ? 'white' : 'black',
+                    pieceID[0] === 'w' ? 'wq' + this.pieceCounters.get('wq') : 'bq' + this.pieceCounters.get('bq')
+                )
+              )
             : currentBoard[to_y][to_x].setPiece(originalPiece);
         if (reassign !== "user tried to capture their own piece") {
             currentBoard[y][x].setPiece(null)
@@ -394,15 +395,13 @@ class Game {
             this.setBoard(currentBoard)
             return reassign
         }
-
-        if (currentBoard[to_y][to_x].getPiece() === null) {
-            // const temp = currentBoard[to_y][to_x]
-            currentBoard[to_y][to_x].setPiece(originalPiece)
-            currentBoard[y][x].setPiece(null)
-            this.isPieceMoved = true;
-            this.setBoard(currentBoard)
-            return "piece moved to an empty cell"
-        }
+        // if (currentBoard[to_y][to_x].getPiece() === null) {
+        //     currentBoard[to_y][to_x].setPiece(originalPiece)
+        //     currentBoard[y][x].setPiece(null)
+        //     this.isPieceMoved = true;
+        //     this.setBoard(currentBoard)
+        //     return "piece moved to an empty cell"
+        // }
 
         const checkMate = this.chess.isCheckmate() ? " has been checkmated" : " has not been checkmated"
         // console.log(this.chess.turn() + checkMate)
@@ -483,18 +482,17 @@ class Game {
         }
     }
 
-    isPawnPromotion(to, piece) {
-        const res = piece === 'p' && (to[1] === 105 || to[1] === 735)
+    isPawnPromotion(to, pieceId) {
+        const res = pieceId[1] === 'p' && (to[1] === 105 || to[1] === 735)
         if (res) {
-            this.nQueens += 1
+            const pieceInitial = pieceId[0] + 'q'
+            this.pieceCounters.set(pieceInitial, this.pieceCounters.get(pieceInitial)+1)
         }
         return res
     }
 
     toChessMove(coords) {
-        // console.log(`toChessMove: x -> ${coords[0]}, y -> ${coords[1]}`)
         let move = this.toAlphabet[coords[0]] + this.toChessCoord[coords[1]]
-        // console.log("proposed move: " + move)
         return move
     }
 
@@ -580,23 +578,93 @@ class Game {
         newGame.isCardAlreadyPlayedThisTurn = this.isCardAlreadyPlayedThisTurn
         newGame.whiteKingInCheck = this.whiteKingInCheck
         newGame.blackKingInCheck = this.blackKingInCheck
-        newGame.nQueens = this.nQueens
-        newGame.pieceCounters = this.pieceCounters
         newGame.pieceCounters = this.pieceCounters
         newGame.selectedItems = this.selectedItems
         newGame.isPieceMoved = this.isPieceMoved
-        newGame.whiteCardInUse = this.whiteCardInUse
-        newGame.blackCardInUse = this.blackCardInUse
+        newGame.whiteSelectedCard = this.whiteSelectedCard
+        newGame.blackSelectedCard = this.blackSelectedCard
         newGame.message = this.message
-        newGame.executeAction = this.executeAction
+        newGame.completed_turn = this.completed_turn
+        newGame.activateCard = this.activateCard
         newGame.onClick = this.onClick
-        newGame.cancelTheCurrentCard = this.cancelTheCurrentCard
-        return newGame        
+        return newGame
     }
 
-    setSelectedItems (list) {
-        this.selectedItems = list
+    toJSON() {
+        const pieces = []
+        this.chessBoard.map(row =>
+            row.map(square => {
+                if (square.pieceOnThisSquare !== null) {
+                    pieces.push(square.pieceOnThisSquare)
+                }
+            })
+        )
+        console.log(pieces)
+        return {
+            // Include all necessary properties for the game state
+            playerTurnToMoveIsWhite: this.playerTurnToMoveIsWhite,
+            chessBoard: this.chessBoard.map(row => row.map(square => square.toJson())),
+            chess: this.chess,
+            whiteDeck: this.getWhiteDeck().map(card => card.toJson()),
+            blackDeck: this.getBlackDeck().map(card => card.toJson()),
+            whiteHand: this.getWhiteHand().map(card => card.toJson()),
+            blackHand: this.getBlackHand().map(card => card.toJson()),
+            whiteUsedCards: this.getWhiteUsedCards().map(card => card.toJson()),
+            blackUsedCards: this.getBlackUsedCards().map(card => card.toJson()),
+            continuousCards: this.continuousCards.map(card => card.toJson()),
+            isCardAlreadyPlayedThisTurn: this.isCardAlreadyPlayedThisTurn,
+            whiteKingInCheck: this.whiteKingInCheck,
+            blackKingInCheck: this.blackKingInCheck,
+            pieceCounters: this.pieceCounters,
+            selectedItems: this.selectedItems,
+            isPieceMoved: this.isPieceMoved,
+            whiteSelectedCard: this.whiteSelectedCard ? this.whiteSelectedCard.toJson() : this.whiteSelectedCard,
+            blackSelectedCard: this.blackSelectedCard ? this.blackSelectedCard.toJson() : this.blackSelectedCard,
+            message: this.message,
+            completed_turn: this.completed_turn,
+            activateCard: this.activateCard,
+            onClick: this.onClick,
+            pieces: pieces
+        };
     }
+
+    static fromJSON(json) {
+        const game = new Game();
+        game.playerTurnToMoveIsWhite = json.playerTurnToMoveIsWhite
+        game.chessBoard = json.chessBoard.map((row) => row.map(Square.fromJSON));
+        const pieces = json.pieces.map(ChessPiece.fromJson);
+        console.log(pieces)
+        pieces.forEach(piece => {
+            if (piece.squareThisPieceIsOn) {
+                const x = piece.squareThisPieceIsOn.x
+                const y = piece.squareThisPieceIsOn.y
+                game.chessBoard[y][x].setPiece(piece);
+            }
+        });
+        game.chess = json.chess
+        game.whiteDeck = json.whiteDeck.map(Card.fromJson); // Assuming you have Card class
+        game.blackDeck = json.blackDeck.map(Card.fromJson);
+        game.whiteHand = json.whiteHand.map(Card.fromJson);
+        game.blackHand = json.blackHand.map(Card.fromJson);
+        game.whiteUsedCards = json.whiteUsedCards.map(Card.fromJson);
+        game.blackUsedCards = json.blackUsedCards.map(Card.fromJson);
+        game.continuousCards = json.continuousCards.map(Card.fromJson);
+        game.isCardAlreadyPlayedThisTurn = json.isCardAlreadyPlayedThisTurn
+        game.whiteKingInCheck = json.whiteKingInCheck
+        game.blackKingInCheck = json.blackKingInCheck
+        game.pieceCounters = json.pieceCounters
+        game.selectedItems = json.selectedItems
+        game.isPieceMoved = json.isPieceMoved
+        game.whiteSelectedCard = json.whiteSelectedCard ? Card.fromJson(json.whiteSelectedCard) : json.whiteSelectedCard
+        game.blackSelectedCard = json.blackSelectedCard ? Card.fromJson(json.blackSelectedCard) : json.blackSelectedCard
+        game.message = json.message
+        game.completed_turn = json.completed_turn
+        game.activateCard = json.activateCard
+        game.onClick = json.onClick
+        console.log(game.chessBoard)
+        return game;
+    }
+
 }
 
 export default Game
