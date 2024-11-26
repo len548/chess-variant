@@ -5,8 +5,8 @@ no piece may capture an opponent’s piece of the same type
 This effect continues until the end of the game or is overridden by another card effect.
 */
 export const brotherhood = (gameState, isWhite) => {
-    gameState.executeAction = () => {
-        const card = isWhite ? gameState.whiteCardInUse : gameState.blackCardInUse
+    gameState.activateCard = () => {
+        const card = isWhite ? gameState.whiteSelectedCard : gameState.blackSelectedCard
         if (!card || card.id !== "brotherhood") {
             throw "brotherhood card is not found."
         }

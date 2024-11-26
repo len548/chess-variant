@@ -1,5 +1,4 @@
 import * as effects from './'
-import {adultery} from "./adultery.js";
 
 export const cardsData = {
     "cards": [

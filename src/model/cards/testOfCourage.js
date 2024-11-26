@@ -30,7 +30,7 @@ export const testOfCourage = (gameState, isWhite) => {
         }
     }
 
-    gameState.executeAction = (isWhite) => {
+    gameState.activateCard = (isWhite) => {
         if (gameState.selectedItems.length <= 0) {
             throw "select a pawn of your color"
         }

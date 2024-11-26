@@ -1,9 +1,9 @@
 import React from "react";
 import CardUI from "./Card";
 
-const CardInUse = ({ card, isWhite, onClick}) => {
+const SelectedCard = ({ card, isWhite, onClick}) => {
     if (!card) {
-        return <div className="card-in-use empty">No card in use</div>;
+        return <div className="card-in-use empty">No card selected</div>;
     }
 
     return (
@@ -11,4 +11,4 @@ const CardInUse = ({ card, isWhite, onClick}) => {
     );
 };
 
-export default CardInUse;
+export default SelectedCard;

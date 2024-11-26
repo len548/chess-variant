@@ -1,3 +1,5 @@
+import Square from "./square.js";
+
 class ChessPiece {
     constructor(name, isAttacked, color, id) {
         this.name = name // string
@@ -23,9 +25,7 @@ class ChessPiece {
         const isNewSquareDifferent = this.squareThisPieceIsOn.x != newSquare.x || this.squareThisPieceIsOn.y != newSquare.y
 
         if (isNewSquareDifferent) {
-            // console.log("set")
             this.squareThisPieceIsOn = newSquare
-            newSquare.setPiece(this)
         }
     }
 

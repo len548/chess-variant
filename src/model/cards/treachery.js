@@ -20,7 +20,7 @@ export const treachery = (gameState, isWhite) => {
         }
     }
 
-    gameState.executeAction = (isWhite) => {
+    gameState.activateCard = (isWhite) => {
         if (gameState.selectedItems.length === 0) {
             throw "select the opponent's non-king piece"
         }

@@ -46,7 +46,7 @@ export const adultery = (gameState, isWhite) => {
         }
     }
 
-    gameState.executeAction = (isWhite) => {
+    gameState.activateCard = (isWhite) => {
         const queenPieceId = gameState.selectedItems[0]
         const emptySquare = gameState.selectedItems[1]
         if (!queenPieceId) {

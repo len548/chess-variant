@@ -26,7 +26,7 @@ export const warCasualties = (gameState, isWhite) => {
     }
 
     // when the player clicks the confirm button, the selected pawns will be removed from the board
-    gameState.executeAction = (isWhite) => {
+    gameState.activateCard = (isWhite) => {
         if (gameState.selectedItems.length === 0) {
             throw "select at least one pawn to remove"
         }

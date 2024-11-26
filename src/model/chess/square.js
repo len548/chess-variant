@@ -1,3 +1,5 @@
+import ChessPiece from "./chesspiece.js";
+
 class Square {
     constructor(x, y, pieceOnThisSquare, canvasCoord) {
         this.x = x // Int 0 < x < 7
@@ -19,7 +21,6 @@ class Square {
             newPiece.setSquare(this)
         } else if (this.getPieceIdOnThisSquare() != newPiece.id && this.pieceOnThisSquare.color != newPiece.color) {
             // case where the function caller wants to change the piece on this square. (only different color allowed)
-            console.log("capture!")
             this.pieceOnThisSquare = newPiece
             newPiece.setSquare(this)
         } else {
@@ -53,6 +54,21 @@ class Square {
     getCanvasCoord() {
         return this.canvasCoord
     }
+
+    toJson() {
+        return {
+            // Include all properties except the circular reference
+            x: this.x,
+            y: this.y,
+            canvasCoord: this.canvasCoord,
+            pieceIdOnThisSquare: null // Use an ID or null
+        };
+    }
+
+    static fromJSON(json) {
+        return new Square(json.x, json.y, null, json.canvasCoord);
+    }
+
 }
 
 export default Square
