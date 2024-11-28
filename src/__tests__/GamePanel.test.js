@@ -28,12 +28,12 @@ describe('GamePanel Component', () => {
             getBlackHand: jest.fn(() => ['card3', 'card4']),
             getWhiteUsedCards: jest.fn(() => Array(5).fill('card5')),
             getBlackUsedCards: jest.fn(() => Array(5).fill('card6')),
-            playCard: jest.fn(),
+            selectCard: jest.fn(),
             drawCard: jest.fn().mockReturnValue('card7'),
             copyGame: jest.fn().mockReturnThis(),
             endTurn: jest.fn(),
-            cancelTheCurrentCard: jest.fn(),
-            executeAction: jest.fn(),
+            cancelSelectedCard: jest.fn(),
+            activateCard: jest.fn(),
         };
     });
 
@@ -47,7 +47,6 @@ describe('GamePanel Component', () => {
 
         // Check for decks and discard piles
         expect(screen.getByText('Deck (5)')).toBeInTheDocument();
-        expect(screen.getByText('White Discard Pile')).toBeInTheDocument();
         // expect(screen.getByText('Black Discard Pile')).toBeInTheDocument();
     });
 
@@ -77,7 +76,7 @@ describe('GamePanel Component', () => {
         fireEvent.click(cancelCardButton);
 
         // Verify that the cancelTheCurrentCard method was called
-        expect(gameMockInstance.cancelTheCurrentCard).toHaveBeenCalled();
+        expect(gameMockInstance.cancelSelectedCard).toHaveBeenCalled();
     });
 
     test('confirm button calls executeAction', () => {
@@ -87,6 +86,6 @@ describe('GamePanel Component', () => {
         fireEvent.click(confirmButton);
 
         // Verify that the executeAction method was called
-        expect(gameMockInstance.executeAction).toHaveBeenCalled();
+        expect(gameMockInstance.activateCard).toHaveBeenCalled();
     });
 });

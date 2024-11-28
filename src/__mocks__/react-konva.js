@@ -3,6 +3,7 @@ import React from 'react';
 
 const Stage = ({ children }) => <div>{children}</div>;
 const Layer = ({ children }) => <div>{children}</div>;
+const Image = ({ children }) => <div>{children}</div>;
+const Rect = ({ children, ...props }) => <div {...props}>{children}</div>;
 
-export { Stage, Layer };
-export default { Stage, Layer };
+module.exports = { Stage, Layer, Image, Rect };

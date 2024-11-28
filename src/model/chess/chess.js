@@ -224,6 +224,7 @@ class Game {
     }
 
     transformPiece(oldPieceId, to) {
+        // to: 'r', 'n', 'b', 'q', 'p'
         const pieceOptions = ['r', 'n', 'b', 'q', 'p']
         const pieceNames = ["rook", "knight", "bishop", "queen", "pawn"]
         if (!to in pieceOptions) {
