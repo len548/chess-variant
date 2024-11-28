@@ -1,12 +1,13 @@
 /*TREACHERY - Remove any non-King piece and replace it with a piece of the opposing color. It is now yours.*/
 export const treachery = (gameState, isWhite) => {
     if (gameState.isPieceMoved) {
-        throw "this card can be used instead of making a move"
+        throw "this card can only be used instead of making a move"
     }
     gameState.onClick = (e) => {
-        const pieceId = e.target.attrs.id;
-        if (!verifyPiece(isWhite, pieceId)){
-            return "You can only choose a non-King opponent's piece"
+        const pieceId = e.target.attrs?.id;
+
+        if (!pieceId || !verifyPiece(isWhite, pieceId)){
+            return "choose a non-King opponent's piece"
         }
         if(gameState.selectedItems.length === 0) {
             gameState.selectedItems.push(pieceId);

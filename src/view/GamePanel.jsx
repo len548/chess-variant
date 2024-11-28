@@ -144,7 +144,6 @@ function GamePanel({ gameInstance }) {
                         setWhiteKingInCheck={setWhiteKingInCheck}
                         blackKingInCheck={blackKingInCheck}
                         setBlackKingInCheck={setBlackKingInCheck}
-                        setGameLog={setGameLog}
                         selectedItems={selectedItems}
                         setSelectedItems={setSelectedItems}
                         addLog = {addLog}

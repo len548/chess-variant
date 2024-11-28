@@ -1,5 +1,6 @@
 import { Image } from 'react-konva';
 import useImage from 'use-image'
+import React from "react";
 
 const Piece = (props) => {
     const choiceOfColor = props.isWhite ? 0 : 1
@@ -24,6 +25,7 @@ const Piece = (props) => {
             //  draggable = {canThisPieceEvenBeMovedByThisPlayer && isItThatPlayersTurn}
              width = {isDragged ? 75 : 60}
              height = {isDragged ? 75 : 60}
+             data-testid="piece-image"
              onDragStart = {props.onDragStart}
              onDragEnd = { (e) => endDragging(e) }
              onClick={ onClick }

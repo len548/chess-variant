@@ -28,9 +28,12 @@ const EmptySquare = ({ i, j, x, y, onClick, isSelected }) => {
 };
 
 EmptySquare.propTypes = {
-    x: PropTypes.number.isRequired,      // X position
-    y: PropTypes.number.isRequired,      // Y position
-    onClick: PropTypes.func.isRequired,  // Click event handler
+    i: PropTypes.number.isRequired,
+    j: PropTypes.number.isRequired,
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+    onClick: PropTypes.func.isRequired,
+    isSelected: PropTypes.bool.isRequired,
 };
 
 export default EmptySquare;

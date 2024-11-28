@@ -60,7 +60,13 @@ describe('ChessBoard Component', () => {
             setGameState={jest.fn()}
             playerTurnToMoveIsWhite={true}
             setWhiteKingInCheck={jest.fn()}
+            whiteKingInCheck={false}
             setBlackKingInCheck={jest.fn()}
+            blackKingInCheck={false}
+            setGameLog={jest.fn()}
+            selectedItems={[]}
+            setSelectedItems={jest.fn()}
+            addLog={jest.fn()}
         />);
         // Check for pieces and empty squares
         const pieces = screen.getAllByTestId('piece');
@@ -76,7 +82,13 @@ describe('ChessBoard Component', () => {
             setGameState={jest.fn()}
             playerTurnToMoveIsWhite={true}
             setWhiteKingInCheck={jest.fn()}
+            whiteKingInCheck={false}
             setBlackKingInCheck={jest.fn()}
+            blackKingInCheck={false}
+            setGameLog={jest.fn()}
+            selectedItems={[]}
+            setSelectedItems={jest.fn()}
+            addLog={jest.fn()}
         />);
         const pieces = screen.getAllByTestId('piece');
         const piece = pieces[0];
@@ -96,7 +108,13 @@ describe('ChessBoard Component', () => {
             setGameState={jest.fn()}
             playerTurnToMoveIsWhite={true}
             setWhiteKingInCheck={jest.fn()}
+            whiteKingInCheck={false}
             setBlackKingInCheck={jest.fn()}
+            blackKingInCheck={false}
+            setGameLog={jest.fn()}
+            selectedItems={[]}
+            setSelectedItems={jest.fn()}
+            addLog={jest.fn()}
         />);
         const pieces = screen.getAllByTestId('piece');
         const piece = pieces[0]; // Select the first piece or any specific one based on your needs
@@ -110,8 +128,19 @@ describe('ChessBoard Component', () => {
     });
 
     test('handles click on piece to select it', () => {
-        render(<ChessBoard gameState={gameMockInstance} setGameState={jest.fn()} playerTurnToMoveIsWhite={true} />);
-
+        render(<ChessBoard
+            gameState={gameMockInstance}
+            setGameState={jest.fn()}
+            playerTurnToMoveIsWhite={true}
+            setWhiteKingInCheck={jest.fn()}
+            whiteKingInCheck={false}
+            setBlackKingInCheck={jest.fn()}
+            blackKingInCheck={false}
+            setGameLog={jest.fn()}
+            selectedItems={[]}
+            setSelectedItems={jest.fn()}
+            addLog={jest.fn()}
+        />);
         const pieces = screen.getAllByTestId('piece');
         const piece = pieces[0];
 
@@ -134,7 +163,13 @@ describe('ChessBoard Component', () => {
             setGameState={jest.fn()}
             playerTurnToMoveIsWhite={true}
             setWhiteKingInCheck={jest.fn()}
+            whiteKingInCheck={false}
             setBlackKingInCheck={jest.fn()}
+            blackKingInCheck={false}
+            setGameLog={jest.fn()}
+            selectedItems={[]}
+            setSelectedItems={jest.fn()}
+            addLog={jest.fn()}
         />);
 
         const pieces = screen.getAllByTestId('piece');

@@ -14,7 +14,6 @@ function ChessBoard(
         setWhiteKingInCheck, 
         blackKingInCheck, 
         setBlackKingInCheck,
-        setGameLog,
         selectedItems,
         setSelectedItems,
         addLog
@@ -82,7 +81,6 @@ function ChessBoard(
         var whiteCheckmated = false
         const exceptions = ["BROTHERHOOD - capturing pieces of the same type is prohibited!", "BLOCKADE - all pieces may only capture pieces of the same kind.", "piece cannot be moved this turn anymore"]
         const update = currentGame.movePiece(selectedID, finalPosition, playerTurnToMoveIsWhite)
-        console.log(update)
         if (exceptions.includes(update)) {
             setDraggedPieceTargetId("")
             addLog(playerTurnToMoveIsWhite, update)
