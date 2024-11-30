@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Board from '../assets/chessBoard.png'
-import { Stage, Layer } from 'react-konva';
+import { Stage, Layer, Text } from 'react-konva';
 import piecemap from './piecemap'
 import Piece from './Piece'
 import EmptySquare from "./EmptySquare.jsx";
@@ -105,7 +105,7 @@ function ChessBoard(
         setWhiteKingInCheck(whiteKingInCheck)
         setBlackKingInCheck(blackKingInCheck)
         setGameState(currentGame)
-
+        addLog(playerTurnToMoveIsWhite, update)
         if (blackCheckmated) {
             alert("WHITE WON BY CHECKMATE!")
         } else if (whiteCheckmated) {
@@ -113,59 +113,92 @@ function ChessBoard(
         }
     }
 
-    
+
     return (
-        <div className='chess-board' style = {{
-            backgroundImage: `url(${Board})`,
-            width: "720px",
-            height: "720px"}}
+        <div
+            className='chess-board'
+            style={{
+                backgroundImage: `url(${Board})`,
+            }}
         >
-            <Stage width={720} height={720}>
+            <Stage width={760} height={760}>
                 <Layer>
-                {gameState.getBoard().map((row) => {
-                    return (
-                        <React.Fragment>
-                            {row.map((square) => {
-                                if (square.isOccupied()) {
-                                    return (
-                                        <Piece
-                                            x = {square.getCanvasCoord()[0]}
-                                            y = {square.getCanvasCoord()[1]} 
-                                            imgurls = {piecemap[square.getPiece().name]}
-                                            isWhite = {square.getPiece().color === "white"}
-                                            draggedPieceTargetId = {draggedPieceTargetId}
-                                            onDragStart = { startDragging }
-                                            onDragEnd = { endDragging }
-                                            onClick = { onClick }
-                                            id = {square.getPieceIdOnThisSquare()}
-                                            // thisPlayersColorIsWhite = {true} //{this.props.color}
-                                            playerTurnToMoveIsWhite = {playerTurnToMoveIsWhite}
-                                            whiteKingInCheck = {whiteKingInCheck}
-                                            blackKingInCheck = {blackKingInCheck}
-                                            isSelected = {selectedItems.includes(square.getPieceIdOnThisSquare())}
-                                        />
-                                    )
-                                } else {
-                                    return (
-                                        <EmptySquare
-                                            j = {square.getCoord()[0]}
-                                            i = {square.getCoord()[1]}
-                                            x = {square.getCanvasCoord()[0]}
-                                            y = {square.getCanvasCoord()[1]}
-                                            onClick = { onClick }
-                                            isSelected = {selectedItems.find(s => typeof s === 'object' && s[0] === square.getCoord()[0] && s[1] === square.getCoord()[1]) !== undefined}
-                                        />
-                                    )
-                                }
-                            })}
-                        </React.Fragment>
-                    )
-                })}
+                    {/* Add row labels (1-8) */}
+                    {Array.from({ length: 8 }, (_, index) => (
+                        <Text
+                            key={`row-label-${index}`}
+                            x={10} // Adjust offset for left alignment
+                            y={90 * index + 35} // Position label in the middle of each row
+                            text={(8 - index).toString()} // Row labels (8 at the top, 1 at the bottom)
+                            fontSize={20}
+                            fill="black"
+                        />
+                    ))}
+
+                    {/* Add column labels (a-h) */}
+                    {['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((col, index) => (
+                        <Text
+                            key={`col-label-${col}`}
+                            x={90 * index + 40} // Position label in the middle of each column
+                            y={725} // Adjust offset for bottom alignment
+                            text={col} // Column labels (a-h)
+                            fontSize={20}
+                            fill="black"
+                        />
+                    ))}
+                </Layer>
+
+                <Layer>
+                    {/* Existing board rendering logic */}
+                    {gameState.getBoard().map((row) => {
+                        return (
+                            <React.Fragment>
+                                {row.map((square) => {
+                                    if (square.isOccupied()) {
+                                        return (
+                                            <Piece
+                                                x={square.getCanvasCoord()[0]}
+                                                y={square.getCanvasCoord()[1]}
+                                                imgurls={piecemap[square.getPiece().name]}
+                                                isWhite={square.getPiece().color === "white"}
+                                                draggedPieceTargetId={draggedPieceTargetId}
+                                                onDragStart={startDragging}
+                                                onDragEnd={endDragging}
+                                                onClick={onClick}
+                                                id={square.getPieceIdOnThisSquare()}
+                                                playerTurnToMoveIsWhite={playerTurnToMoveIsWhite}
+                                                whiteKingInCheck={whiteKingInCheck}
+                                                blackKingInCheck={blackKingInCheck}
+                                                isSelected={selectedItems.includes(square.getPieceIdOnThisSquare())}
+                                            />
+                                        );
+                                    } else {
+                                        return (
+                                            <EmptySquare
+                                                j={square.getCoord()[0]}
+                                                i={square.getCoord()[1]}
+                                                x={square.getCanvasCoord()[0]}
+                                                y={square.getCanvasCoord()[1]}
+                                                onClick={onClick}
+                                                isSelected={
+                                                    selectedItems.find(
+                                                        (s) =>
+                                                            typeof s === "object" &&
+                                                            s[0] === square.getCoord()[0] &&
+                                                            s[1] === square.getCoord()[1]
+                                                    ) !== undefined
+                                                }
+                                            />
+                                        );
+                                    }
+                                })}
+                            </React.Fragment>
+                        );
+                    })}
                 </Layer>
             </Stage>
         </div>
-
-    )
+    );
 }
 
 export default ChessBoard

@@ -47,32 +47,32 @@ class Game {
         // each card has to verify if conditions to execute the card are all met or not.
         this.activateCard = function(){}
         this.onClick = function() {}
-        this.cancelSelectedCard = function (card, isWhite) {
-            this.selectedItems = []
-            if (!card) {
-                return "there is no card played!"
-            }
-            if (isWhite) {
-                this.whiteHand.push(card);
-                this.whiteSelectedCard = null
-            }
-            else {
-                this.blackHand.push(card);
-                this.blackSelectedCard = null
-            }
-            this.onClick = function(){}
-            this.activateCard = function(){}
-            this.message = null
-            return `${card.name} is cancelled and returned to hand`
-        }
+    }
 
+    cancelSelectedCard (card, isWhite) {
+        this.selectedItems = []
+        if (!card) {
+            return "there is no card played!"
+        }
+        if (isWhite) {
+            this.whiteHand.push(card);
+            this.whiteSelectedCard = null
+        }
+        else {
+            this.blackHand.push(card);
+            this.blackSelectedCard = null
+        }
+        this.onClick = function(){}
+        this.activateCard = function(){}
+        this.message = null
+        return `${card.name} is cancelled and returned to hand`
     }
 
     addToContinuousCards(card) {
         if (!card) {
             return "card not found"
         }
-        if (!card.contiuing_effect) {
+        if (!card.continuing_effect) {
             return "not continuous effect"
         }
         if (card.name === "brotherhood" || card.name === "blockade") {
@@ -428,7 +428,7 @@ class Game {
         }
         this.isPieceMoved = true;
         this.setBoard(currentBoard);
-        return `${moveAttempt.color}${moveAttempt.piece} moved to ${moveAttempt.to} from ${moveAttempt.from}`
+        return `moved ${moveAttempt.piece} to ${moveAttempt.to} from ${moveAttempt.from}`
     }
 
     isCastle(moveAttempt) {
